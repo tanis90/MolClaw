@@ -54,7 +54,7 @@ The core logic of drug discovery is a funnel — progressively narrowing a large
 
 **Tier 1 (seconds per molecule): physicochemical property and drug-likeness filtering.** Use the RDKit descriptor suite and drug-likeness tools to eliminate obviously unqualified molecules. Typical elimination rate: 20–40%.
 
-**Tier 2 (seconds to minutes per molecule): docking assessment.** Use QuickVina2-GPU or DiffDock to evaluate geometric complementarity with the target. Note that docking scores are ranking tools, not absolute affinities. Docking box dimensions must be at least 25 Å per axis (see Chapter 5, Principle 18).
+**Tier 2 (seconds to minutes per molecule): docking assessment.** Use QuickVina2-GPU or KarmaDock to evaluate geometric complementarity with the target. Note that docking scores are ranking tools, not absolute affinities. Docking box dimensions must be at least 25 Å per axis (see Chapter 5, Principle 18).
 
 **Tier 3 (minutes per molecule): multi-dimensional rescoring.** Use at least two of EquiScore rescoring, interaction analysis (interaction-visualizer preferred; ProLIF for batch/trajectory), and Boltz-2 affinity prediction to cross-validate docking results. Candidates ranked consistently across methods are more trustworthy.
 
@@ -215,7 +215,7 @@ All quantitative results in the report MUST originate from actual tool computati
 
 **Level 1 (highest authority): Direct tool computation.** The primary tool computes the required value (e.g., QuickVina for docking score, ADMET-AI for CYP inhibition). Always prefer this.
 
-**Level 2: Alternative tool computation.** If the primary tool fails, try a backup tool (e.g., DiffDock instead of QuickVina; KarmaDock as another alternative).
+**Level 2: Alternative tool computation.** If the primary tool fails, try a deployed backup tool (e.g., KarmaDock instead of QuickVina).
 
 **Level 3: Approximate or indirect computation.** If no tool directly computes the required value, consider whether an approximate computational method exists (e.g., LogP as a rough proxy for solubility trends; number of rotatable bonds as a proxy for conformational flexibility).
 
@@ -250,7 +250,7 @@ Every molecular structure file generated during execution — whether it is an i
 
 | Tool Category | Specific Tools | Structure Output Fields to Download |
 |--------------|----------------|-------------------------------------|
-| Molecular docking | QuickVina, KarmaDock, DiffDock, EquiScore-docking | `docking_res_file` (PDBQT with poses) |
+| Molecular docking | QuickVina, KarmaDock, EquiScore-docking | QuickVina `docking_file` (PDBQT); KarmaDock `key_files.pose_sdf_files`; EquiScore `predictions_path` plus pose inputs |
 | Binding affinity prediction | Boltz-2 | `complex_cif_file` (protein–ligand complex CIF) |
 | Protein structure prediction | ESMFold | Predicted PDB file |
 | Complex structure prediction | Chai-1 | Predicted complex PDB/CIF files |
@@ -259,7 +259,7 @@ Every molecular structure file generated during execution — whether it is an i
 | Free energy calculation | gmx_MMPBSA | Energy files, intermediate structures |
 | Coarse-grained simulation | GoCA, OpenAWSEM | Output PDB, trajectory |
 | Protein repair | fix_pdb, pdbfixer | Repaired PDB |
-| Format conversion | convert_smiles_to_format, convert_pdb_to_pdbqt | Converted structure files |
+| Format conversion | convert_smiles_to_format, convert_pdb_to_pdbqt_dock | Converted structure files |
 | Sequence design | ProteinMPNN → ESMFold | Designed structure after validation |
 
 **Implementation protocol — execute after EVERY tool call that returns a structure file path:**
@@ -299,7 +299,7 @@ Every image file generated during execution must be downloaded using the same fi
 | Analysis Type | Tool/Step | Expected Image Output |
 |--------------|-----------|----------------------|
 | Interaction fingerprint analysis (batch/trajectory) | ProLIF (docking, md, protein-protein modes) | Interaction heatmap, frequency barplot |
-| Interaction analysis + visualization (local) | interaction-visualizer | diagram2d_*.png (Schrödinger-style 2D), residue_bar_*.png, interface_heatmap_*.png, interface_network_*.png, pymol_*_{front,side,top}.png |
+| Interaction analysis + visualization (MCP; local CLI also bundled) | interaction_visualizer | diagram2d_*.png (Schrödinger-style 2D), residue_bar_*.png, interface_heatmap_*.png, interface_network_*.png, pymol_*_{front,side,top}.png |
 | MD trajectory analysis | GROMACS/OpenMM analysis | RMSD plot, RMSF plot, contact persistence |
 | Energy decomposition | gmx_MMPBSA analysis | Per-residue energy contribution plot |
 | Structure quality assessment | ESMFold/Chai-1 | pLDDT coloring, confidence maps |
@@ -381,29 +381,38 @@ Boltz-2 input starts at UniProt residue 669, so Boltz-2_internal = UniProt − 6
 - Reporting interaction analysis residue identifiers (e.g., ILE159, VAL149) without noting that these are in the tool's internal numbering and have not been mapped back to the reference scheme. (Applies to interaction-visualizer `rec_resid_pdb` column, ProLIF output, and PLIP output.)
 - Assuming that two PDB files for the same protein use the same numbering — different crystal structures may use different numbering conventions.
 
-**Concrete implementation: `residue_mapper.py`**
+**Concrete implementation: `residue_mapper` MCP tool**
 
-The workspace provides a dedicated mapping script (`residue_mapper.py`) that automates the entire mapping protocol. It supports three strategies in priority order: (1) arithmetic mapping for predicted structures when `--input-seq-start` is known, (2) DBREF-based offset for RCSB PDB files, (3) Needleman-Wunsch sequence alignment as fallback. It requires no external dependencies beyond Python 3.
+The deployed `residue_mapper` tool automates the mapping protocol. It supports arithmetic mapping for predicted structures when `input_seq_start` is known, DBREF-based mapping for RCSB PDB files, and sequence alignment as fallback.
 
 Typical invocations the agent should use:
 
-```bash
-# After obtaining an RCSB PDB — auto-reads DBREF:
-python3 residue_mapper.py --pdb 1M17_fixed.pdb --uniprot-id P00533 --chain A \
-    -o residue_mapping.csv --query "Met793,Thr790,Leu718,Val726,Ala743,Leu844"
+```python
+# After obtaining an RCSB PDB — allow DBREF mapping, then alignment fallback.
+response = await client.session.call_tool("residue_mapper", arguments={
+    "pdb_path": "1M17_fixed.pdb",
+    "uniprot_id": "P00533",
+    "chain": "A",
+    "query": "Met793,Thr790,Leu718,Val726,Ala743,Leu844",
+    "output_format": "csv"
+})
 
-# After Boltz-2 / ESMFold prediction — arithmetic from known start:
-python3 residue_mapper.py --pdb boltz2_complex.pdb --uniprot-id P00533 --chain A \
-    --predicted --input-seq-start 718 -o residue_mapping_boltz2.csv
-
-# Reverse-lookup: ProLIF reports residues 76, 73, 26 — what UniProt numbers?
-python3 residue_mapper.py --pdb boltz2_complex.pdb --uniprot-id P00533 --chain A \
-    --predicted --input-seq-start 718 --query "tool:76,tool:73,tool:26"
+# After Boltz-2 / ESMFold prediction — arithmetic from the known sequence start.
+response = await client.session.call_tool("residue_mapper", arguments={
+    "pdb_path": "boltz2_complex.pdb",
+    "uniprot_id": "P00533",
+    "chain": "A",
+    "predicted": True,
+    "input_seq_start": 718,
+    "query": "tool:76,tool:73,tool:26",
+    "output_format": "csv"
+})
+mapping_result = client.parse_result(response)
 ```
 
-The output CSV contains columns: `chain, pdb_resnum, pdb_resname, one_letter, uniprot_resnum, tool_internal_num, match_type, notes`. Save this file as a step-numbered artifact (e.g., `step02_residue_mapping.csv`) and reference it whenever interpreting residue-specific analysis results. See `RESIDUE_MAPPER_GUIDE.md` for full CLI reference and edge-case handling.
+The result returns `output_dir` and a relative `mapping_file`, together with mapping counts and optional `query_results`. Save the mapping artifact with the run and reference it whenever interpreting residue-specific analysis results.
 
-**Tool-level offset support: `molclaw-interaction-visualizer`.** The local interaction analysis script natively supports PDB→UniProt residue number reconciliation via `--resid_offset N` (where `N = UniProt_number − PDB_number`). When this parameter is set, all CSV outputs include a `rec_resid_mapped` column with the offset already applied. This eliminates the need for post-hoc mapping when using this tool. Compute the offset from `residue_mapper.py` output or from known sequence alignment before invoking the visualizer.
+**Tool-level offset support: `interaction_visualizer`.** The MCP tool accepts `resid_offset=N` (where `N = UniProt_number − PDB_number`). When this parameter is set, all CSV outputs include a `rec_resid_mapped` column with the offset already applied. This eliminates the need for post-hoc mapping when using this tool. Compute the offset from the `residue_mapper` MCP output or from known sequence alignment before invoking the visualizer.
 
 ### Principle 18: Docking Parameter Safeguards
 
@@ -418,8 +427,8 @@ For all grid-based molecular docking methods (QuickVina, AutoDock Vina, and anal
 | 1 (initial) | max(25, detected_pocket_size) | Standard attempt |
 | 2 | 30 Å | First retry on failure |
 | 3 | 40 Å | Second retry |
-| 4 | 50 Å | Third retry |
-| 5 (fallback) | — | Switch to alternative method (DiffDock, KarmaDock) |
+| 4 | 47.625 Å | Third retry; current QuickVina2-GPU maximum |
+| 5 (fallback) | — | Switch to the deployed alternative method (KarmaDock) |
 
 Log every retry attempt (box size used, outcome) in `run_log.md`.
 
@@ -478,7 +487,7 @@ Round 1: Structure prediction (wild-type baseline) → Interface/pocket identifi
 
 Round 2: Select top candidates by fitness → Predict structure of each (ESMFold) → **Critical diagnostic step:** compare per-residue pLDDT with wild-type. Identify positions where design decreased local confidence → Fix those problematic positions in the next iteration; optionally open high-confidence positions that were previously fixed. Generate refined candidates.
 
-Round 3: Interface binding validation — predict complex structures (Chai-1) for wild-type and top candidate with the binding partner → Protein-protein docking (HDOCK) → Interface interaction analysis (interaction-visualizer protein mode preferred for single-structure visualization; ProLIF protein-protein mode for trajectory analysis) → Verify ALL fixed interface residues maintain native contacts → Optionally run FoldX AlaScan (with chains) on wild-type and designed complex to confirm hotspot residues (ΔΔG > 1.0 kcal/mol) are preserved → Conformational sampling comparison: reduced conformational diversity in the designed protein vs. wild-type suggests improved thermostability.
+Round 3: Interface binding validation — predict complex structures (Chai-1) for wild-type and top candidate with the binding partner → Protein-protein/protein-peptide docking (HDOCK) → Interface interaction analysis (interaction-visualizer protein mode for protein-protein, peptide mode with HDOCK `partner_chains` for protein-peptide; ProLIF protein-protein mode for trajectory analysis) → Verify ALL fixed interface residues maintain native contacts → Optionally run FoldX AlaScan (with chains) on wild-type and designed complex to confirm hotspot residues (ΔΔG > 1.0 kcal/mol) are preserved → Conformational sampling comparison: reduced conformational diversity in the designed protein vs. wild-type suggests improved thermostability.
 
 **Key checkpoints specific to this strategy:**
 - Were positions causing pLDDT drops in Round 2 correctly identified and constrained in subsequent rounds?

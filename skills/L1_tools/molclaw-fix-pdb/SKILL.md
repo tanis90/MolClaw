@@ -1,6 +1,6 @@
 ---
 name: molclaw-fix-pdb
-description: Repair and clean PDB files with PDBFixer, returning repaired file path and topology counts.
+description: Repair and clean PDB or mmCIF structures with PDBFixer, returning a repaired PDB path and topology counts.
 license: MIT license
 metadata:
     skill-author: PJLab
@@ -20,9 +20,9 @@ Note:
 The description of tool *fix_pdb*.
 
 ```tex
-Repair a PDB file using PDBFixer, optionally clean or model missing parts, write the repaired PDB (unless `dry_run`), and return topology counts.
+Repair a PDB or mmCIF structure using PDBFixer, optionally clean or model missing parts, write the repaired PDB (unless `dry_run`), and return topology counts.
 Args:
-    input_path (str): Path to the source PDB file to repair.
+    input_path (str): Path to the source PDB or mmCIF file to repair.
     output_path (str|None): Optional output file path for the repaired PDB. If omitted the tool writes to a run-specific folder.
     add_hydrogens (bool): Add missing hydrogens after filling atoms (default: False).
     ph (float): pH value used when adding hydrogens (default: 7.0).

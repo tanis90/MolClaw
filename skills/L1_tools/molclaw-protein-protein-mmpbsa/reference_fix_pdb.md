@@ -12,10 +12,10 @@ metadata:
 
 ### 1. Scenario Description
 
-Repair a PDB file using PDBFixer, optionally adding hydrogens or modeling missing residues, and return the cleaned structure plus topology counts.
+Repair a PDB or mmCIF structure using PDBFixer, optionally adding hydrogens or modeling missing residues, and return the cleaned PDB plus topology counts.
 
 Args:
-- `input_path` (str): Source PDB file to repair (required).
+- `input_path` (str): Source PDB or mmCIF file to repair (required).
 - `output_path` (str | None): Optional override path to write the repaired PDB; defaults to the MCP-managed run directory.
 - `add_hydrogens` (bool): Whether to add missing hydrogens after residue repair (default: False).
 - `ph` (float): pH used when adding hydrogens (default: 7.0).
@@ -52,7 +52,7 @@ response = await client.session.call_tool(
         "dry_run": False,
     },
 )
-result = DrugSDAClient.parse_result(response)
+result = client.parse_result(response)
 fixed_pdb = result.get("output_file")
 ```
 

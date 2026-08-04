@@ -21,6 +21,7 @@ Tool description:
 
 ```tex
 Use Boltz to predict binding affinity between protein (receptor) and small molecule (ligand).
+The server selects the output directory. This tool is for small-molecule ligands, not peptide/protein partners; ligands exceeding the Boltz affinity atom limit are returned as a structured model-capability error rather than a timeout.
 Args:
     protein (List[dict]): Protein chains, each element contains 'chain' and 'sequence' (e.g., [{{'chain': 'A', 'sequence': 'MGNAAAAKKGSEQASQRRSSLEQP*'}}])
     smiles (str): Input SMILES string (e.g., "N[C@@H](Cc1ccc(O)cc1)C(=O)O")
@@ -46,3 +47,5 @@ result = client.parse_result(response)
 affinity_probability_binary = result["affinity_probability_binary"]
 affinity_pred_value = result["affinity_pred_value"]
 ```
+
+Current capability boundary: Boltz affinity rejects ligands with more than 128 atoms. For peptide ligands such as PTHrP/TIP39 fragments, this is expected behavior; use protein-peptide structure/docking workflows such as Chai-1/HDOCK plus `interaction_visualizer(mode="peptide")` instead of interpreting the Boltz rejection as a server failure.

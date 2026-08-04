@@ -1,6 +1,6 @@
 ---
 name: molclaw-protein-structure-retrieve
-description: Retrieve and download protein structure file (pdb format) using gene name, Uniprot ID or PDB ID. 
+description: Retrieve and download a protein structure file (.pdb or .cif) using a gene name, UniProt ID, or PDB ID.
 license: MIT license
 metadata:
     skill-author: PJLab
@@ -18,15 +18,15 @@ Note:
 The description of tool *retrieve_protein_structure_by_gene_name*.
 
 ```tex
-Retrieve and download the protein structure (.pdb) file using standard gene name.
+Retrieve and download a protein structure (.pdb or .cif) using a standard gene name.
 Args:
     gene_name (str): Input gene name (e.g., 'TP53')
-    organism (str): Species NCBI Taxonomy ID (default: 9606 for human, 10090 for mouse)
-    sort_by (str): The sorting strategy defaults ('length') to prioritizing sequence length for maximum coverage, with an alternative option ('resolution') to prioritize structural resolution. 
+    organism (str): Required species NCBI Taxonomy ID (use 9606 for human or 10090 for mouse)
+    sort_by (str): Required sorting strategy: 'length' prioritizes sequence coverage; 'resolution' prioritizes structural resolution.
 Return:
     status (str): success/error
     msg (str): message
-    prot_structure_path (str): Path to the downloaded protein structure file (pdb format)
+    prot_structure_path (str): Path to the downloaded .pdb or .cif structure file
 ```
 
 How to use tool *retrieve_protein_structure_by_gene_name* :
@@ -49,14 +49,14 @@ prot_structure_path = result["prot_structure_path"]
 The description of tool *retrieve_protein_structure_by_uniprot_id*.
 
 ```tex
-Retrieve and download the protein structure (.pdb) file using uniprot id.
+Retrieve and download a protein structure (.pdb or .cif) using a UniProt ID.
 Args:
     uniprot_id (str): Input uniprot id (e.g., 'P04637')
-    sort_by (str): The sorting strategy defaults ('length') to prioritizing sequence length for maximum coverage, with an alternative option ('resolution') to prioritize structural resolution. 
+    sort_by (str): Required sorting strategy: 'length' prioritizes sequence coverage; 'resolution' prioritizes structural resolution.
 Return:
     status (str): success/error
     msg (str): message
-    prot_structure_path (str): Path to the downloaded protein structure file (pdb format)
+    prot_structure_path (str): Path to the downloaded .pdb or .cif structure file
 ```
 
 How to use tool *retrieve_protein_structure_by_uniprot_id* :
@@ -78,20 +78,20 @@ prot_structure_path = result["prot_structure_path"]
 The description of tool *retrieve_protein_structure_by_pdb_id*.
 
 ```tex
-Retrieve and download the protein structure (.pdb) file using pdb id.
+Retrieve and download a protein structure using a PDB ID. The service tries .pdb first and automatically falls back to .cif when needed.
 Args:
     pdb_id (str): Input pdb id (e.g., "2l3r", "5XYF")
 Return:
     status (str): success/error
     msg (str): message
-    prot_structure_path (str): Path to the downloaded protein structure file (pdb format)
+    prot_structure_path (str): Path to the downloaded .pdb or fallback .cif structure file
 ```
 
 How to use tool *retrieve_protein_structure_by_pdb_id* :
 
 ```python
 response = await client.session.call_tool(
-    "retrieve_protein_structure_by_uniprot_id",
+    "retrieve_protein_structure_by_pdb_id",
     arguments={
         "pdb_id": pdb_id
     }

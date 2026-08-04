@@ -194,7 +194,7 @@ WRONG: "Leu50 contributes −2.3 kcal/mol" (ambiguous — which Leu50?).
 If MM-PBSA results contradict docking-based rankings:
 
 1. **Diagnose:** Check if the docking pose was stable during MD. Check if the MD simulation equilibrated (RMSD trajectory stable?).
-2. **Re-run if needed:** If the ligand left the pocket, re-dock with tighter constraints or try DiffDock, then re-run MM-PBSA.
+2. **Re-run if needed:** If the ligand left the pocket, re-dock with tighter constraints or try KarmaDock, then re-run MM-PBSA.
 3. **Accept disagreement:** If re-running confirms the result, report the disagreement. This is valuable information.
 
 ## Common Failures & Recovery
@@ -203,7 +203,7 @@ If MM-PBSA results contradict docking-based rankings:
 |---------|-------------|----------|
 | `prepare_complex` fails at topology generation | Ligand parameterization error | Check if ligand SMILES is valid; try re-converting the ligand format |
 | MD simulation crashes mid-run | System instability; bad initial geometry | Re-run energy minimization with more steps; increase equilibration time |
-| ΔG is positive (repulsive) | Ligand not in a favorable pose | Re-examine the docking pose; try alternative from DiffDock |
+| ΔG is positive (repulsive) | Ligand not in a favorable pose | Re-examine the docking pose; try the deployed KarmaDock alternative |
 | GB and PB give opposite rankings | Strong electrostatic effects | Report both; favor PB for charged systems; note uncertainty |
 
 ## Quality Gates (Active Checkpoints)

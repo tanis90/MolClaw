@@ -1,6 +1,6 @@
 ---
 name: molclaw-pdbfixer
-description: Repair a protein PDB file with PDBFixer: fix missing atoms/residues, add hydrogens, remove heterogens, etc. 
+description: Repair a protein PDB or mmCIF structure with PDBFixer and write a repaired PDB.
 license: MIT license
 metadata:
     skill-author: PJLab
@@ -13,14 +13,14 @@ Note:
 - For PDB file inputs, it is recommended to preprocess them using `molclaw-pdbfixer` before execution.
 - Please refer to skill `molclaw-scp-server` to complete tool invocation.
 
-Use tool *fix_pdb* to repair the protein structure file (pdb format) as below:
+Use tool *fix_pdb* to repair a protein structure in PDB or mmCIF format as below:
 
 Tool description:
 
 ```tex
-Repair a PDB file with PDBFixer: fix missing atoms/residues, add hydrogens, remove heterogens, etc.
+Repair a PDB or mmCIF structure with PDBFixer and write a repaired PDB.
 Args:
-    input_path (str): Path to the source PDB file to repair (required)
+    input_path (str): Path to the source PDB or mmCIF file to repair (required)
     add_hydrogens (bool): Add missing hydrogens after atom completion (default: False)
     ph (float): pH value used when adding hydrogens (default: 7.0)
     remove_heterogens (bool): Remove heterogens/ligands; keeps waters if remove_water is False (default: False)

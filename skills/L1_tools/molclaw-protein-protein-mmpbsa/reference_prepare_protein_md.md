@@ -48,7 +48,7 @@ response = await client.session.call_tool(
         "npt_time": 100.0,
     },
 )
-result = DrugSDAClient.parse_result(response)
+result = client.parse_result(response)
 workspace = result.get("run_dir")
 ```
 

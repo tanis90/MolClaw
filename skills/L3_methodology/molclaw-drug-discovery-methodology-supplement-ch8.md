@@ -51,8 +51,8 @@ The agent should maintain a functional understanding of its tool ecosystem organ
 | Structure acquisition | RCSB PDB, UniProt, AlphaFold DB, ESMFold, Chai-1 | Identifier/sequence → 3D structure |
 | Pocket detection | fpocket, P2Rank | Protein structure → binding site coordinates |
 | Molecular generation | REINVENT4 (6 modes), LLM-guided design | Seed/scaffold → novel molecules |
-| Molecular docking | QuickVina2-GPU, DiffDock, KarmaDock | Protein + ligand → binding pose + score |
-| Interaction analysis | interaction-visualizer (local, primary), ProLIF (MCP, batch/trajectory), PLIP | Complex structure → interaction fingerprint / visualization / decision JSON |
+| Molecular docking | QuickVina2-GPU, KarmaDock | Protein + ligand → binding pose + score |
+| Interaction analysis | interaction_visualizer (MCP, primary; local CLI also bundled), ProLIF (MCP, batch/trajectory), PLIP | Complex structure → interaction fingerprint / visualization / decision JSON |
 | Affinity prediction | Boltz-2, EquiScore | Protein-ligand pair → predicted affinity |
 | Property computation | RDKit (8 modules), ADMET-AI | SMILES → physicochemical/ADMET profile |
 | Dynamics simulation | GROMACS, OpenMM, GoCa, OpenAWSEM | Structure → trajectory → ensemble |
@@ -76,7 +76,7 @@ The capability inventory (Section 23.1) describes what each tool does in isolati
 | PSSM matrix | foldx_tool (pssm) | Affinity maturation (L2-09 Round 2), Position tolerance analysis (L2-10) |
 | Pocket coordinates + box | fpocket, p2rank | Docking box definition (quickvina, karmadock) |
 | Ligand SMILES | User input, REINVENT4, LLM design, PubChem retrieval | Docking (quickvina), Property calc (rdkit modules, admet_ai), Affinity pred (boltz2), Similarity (morgan_fp), SMILES editor |
-| Docked pose (PDBQT/SDF) | quickvina, diffdock, karmadock | Interaction analysis (interaction-visualizer primary, prolif for batch, plip), Rescoring (equiscore), Visualization |
+| Docked pose (PDBQT/SDF) | quickvina, karmadock | Interaction analysis (interaction-visualizer primary, prolif for batch, plip), Rescoring (equiscore), Visualization |
 | Interaction fingerprint | interaction-visualizer (primary), prolif (batch/trajectory), plip | SAR reasoning (agent), Selectivity comparison (cross-target), Optimization diagnosis |
 | Interaction visualization (2D diagram, 3D rendering, decision JSON) | interaction-visualizer | L2 Report assembly, Agent decision loop (top_residues/hot_partner_sites), L2-05 optimization diagnosis (partner_site.csv) |
 | Binding affinity score | boltz2, equiscore, quickvina score | Ranking, Iterative optimization seed selection, Convergence assessment |
@@ -446,7 +446,7 @@ In addition to the Phase 0 proactive retrieval described above, the agent MUST c
 
 **(b) On REINVENT4 producing zero valid molecules:** This is a high-frequency failure mode documented in MolClaw benchmarking. Before switching to alternative generation strategies, check for any auto-generated L1 skill whose `Tools Involved` includes `reinvent_mol2mol_sampling` or related REINVENT tool names.
 
-**(c) On ProLIF or PLIP failing with valence, indexing, or parsing errors:** Use `molclaw-interaction-visualizer` (local script) as the primary alternative — it handles PDBQT/SDF/MOL2 input natively and does not depend on SCP. Also check for auto-generated skills documenting additional workarounds or PDBQT-specific preprocessing steps.
+**(c) On ProLIF or PLIP failing with valence, indexing, or parsing errors:** Use the deployed `interaction_visualizer` MCP tool as the primary alternative; the bundled local CLI remains available when MCP access is unavailable. It handles PDBQT/SDF/MOL2 input natively. Also check for auto-generated skills documenting additional workarounds or PDBQT-specific preprocessing steps.
 
 **(d) On any docking tool returning all-positive or all-identical scores:** Check for auto-generated skills documenting receptor preparation issues or docking box configuration patterns for specific protein families.
 
@@ -537,7 +537,7 @@ The agent should maintain a mental model (and, when executing multi-task session
 | Binding free energy estimation | MM-PBSA (gmx_MMPBSA) | Medium | Relative comparison within same target | Requires ≥10 ns MD trajectory; entropy underestimated |
 | Binding free energy (high precision) | FEP | **NOT AVAILABLE** | — | Would require deployment of FEP software |
 | Interaction identification (batch/trajectory) | ProLIF, PLIP | Medium–High | Batch docking fingerprint comparison, MD trajectory interaction dynamics, protein-protein trajectory profiling | ProLIF fails on non-standard atom types; distance-based, not energy-based; requires SCP server |
-| Interaction identification + visualization (local, **primary**) | interaction-visualizer | Medium–High | 9 interaction types with geometric criteria; Schrödinger-style 2D diagram; PyMOL 3D rendering; residue role annotation; decision JSON (top_residues, hot_partner_sites). **Default tool for all single-structure interaction analysis.** | Geometry-based, not energy-based; no MD trajectory support; no batch docking comparison; strength hints are qualitative, NOT quantitative energies; requires rdkit for 2D diagram, pymol for 3D |
+| Interaction identification + visualization (MCP, **primary**; local CLI also bundled) | interaction_visualizer | Medium–High | 9 interaction types with geometric criteria; Schrödinger-style 2D diagram; PyMOL 3D rendering; residue role annotation; decision JSON (top_residues, hot_partner_sites). **Default tool for all single-structure interaction analysis.** | Geometry-based, not energy-based; no MD trajectory support; no batch docking comparison; strength hints are qualitative, NOT quantitative energies; requires rdkit for 2D diagram, pymol for 3D |
 | Conformational sampling | OpenAWSEM, GoCa, OpenMM | Medium | Identify flexible regions, transient states | Sampling is incomplete; rare events may be missed |
 | Drug-likeness assessment | RDKit QED, Lipinski | High (deterministic) | Rule-based filtering | Rules are guidelines, not guarantees of drugability |
 | ADMET prediction | ADMET-AI | Low–Medium (statistical) | Early-stage triage of compound libraries | Probabilistic; confidence varies by endpoint |

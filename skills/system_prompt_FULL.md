@@ -113,7 +113,7 @@ Run `ls skills/L2_workflows/`. If non-empty, scan the filename list (e.g., `01-t
 If no single L2 workflow fully covers the current task, and the L3 supplement was loaded, check Principle 23.1a (Data Flow Connectivity Map) for uncovered composition paths that match the task. If a match is found, use the indicated paradigm and reference L2 as starting points for draft workflow authoring (Supplement Principle 24).
 
 **(3) Tool Level (L1) — scan directory only, read on demand.**
-Run `ls skills/L1_tools/`. If non-empty, **look only at the subfolder names** to see which tools are available (e.g., `molclaw-quickvina-docking/`, `molclaw-admet/`). **Do NOT read any SKILL.md content at this stage** — wait until the next step (planning) determines which tools are needed. If empty, skip.
+Run `ls skills/L1_tools/`. If non-empty, treat the subfolder names only as a catalog of candidate skills (e.g., `molclaw-quickvina-docking/`, `molclaw-admet/`), not proof that the corresponding MCP tool is deployed. Deployment status comes from the current MCP `list_tools` result or an explicit availability notice in the selected `SKILL.md`; for example, the retained DiffDock skill is marked unavailable. If empty, skip.
 
 <!-- NEW: Research level loading -->
 **(3.5) Research Level (LR) — load if research needs were identified in triage.**
@@ -148,7 +148,7 @@ Based on the task and the skills you have read, explicitly answer the following 
 - What is the core objective? Which sub-tasks are required?
 - Which tools are needed? In what order? Which steps depend on others?
 - Which tools are on the **critical path** (task fails without them)? Which are **value-added** (nice to have)?
-- What is the fallback if a critical tool fails? (e.g., if QuickVina fails, try DiffDock)
+- What is the fallback if a critical tool fails? (e.g., if QuickVina fails, try KarmaDock)
 - **Research integration timing (if LR tools will be used):** At which phase should literature search occur? Before computation (context and baselines), during iteration (SAR guidance when optimization stagnates), or after computation (validation against published data)?
 
 ### 0.3 Self-Check: Review Your Plan

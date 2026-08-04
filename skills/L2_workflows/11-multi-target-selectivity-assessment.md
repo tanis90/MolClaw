@@ -57,14 +57,14 @@ For each target protein, execute Skill 1 independently. Record for each:
 **Method 1 (preferred): Programmatic sequence alignment.**
 ```python
 # Extract sequences from both target PDB files
-# Align using residue_mapper.py or simple positional alignment
+# Align using the residue_mapper MCP tool or simple positional alignment
 # Build cross-target correspondence table
 ```
 
 **Method 2: DBREF-based UniProt mapping.**
 For each target, extract the DBREF record → UniProt residue mapping. Then align via shared UniProt residue numbers.
 
-**Method 3: residue_mapper.py with shared UniProt ID (if available).**
+**Method 3: `residue_mapper` MCP tool with shared UniProt ID (if available).**
 If homologous targets map to different UniProt IDs (e.g., CDK2 = P24941, CDK4 = P11802), build separate UniProt mappings, then align by conserved positions using sequence comparison.
 
 **Build a cross-target alignment table:**

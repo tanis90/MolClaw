@@ -208,8 +208,8 @@ If any docking returns an error, a positive score, or no valid pose:
 | 0 (initial) | max(25, detected_size) | Standard attempt |
 | 1 | 30 Å | If initial fails |
 | 2 | 40 Å | If retry 1 fails |
-| 3 | 50 Å | If retry 2 fails |
-| 4 (fallback) | — | Switch to DiffDock or KarmaDock |
+| 3 | 47.625 Å | If retry 2 fails; current QuickVina2-GPU maximum |
+| 4 (fallback) | — | Switch to KarmaDock |
 
 Log every retry attempt and its outcome in `run_log.md`. If ALL molecules in a batch fail docking, the problem is likely in receptor preparation — check receptor format and box definition.
 
@@ -233,7 +233,7 @@ with open(local_path, "wb") as f:
 **A docking step is NOT considered complete until the pose file has been downloaded and verified.** These pose files are Category A (user-critical) outputs — they are essential for downstream analysis, user verification, and visualization.
 
 **Supplementary methods (when to use):**
-- **DiffDock:** Use when the pocket is uncertain (blind docking needed), or for Top 5 validation. **WARNING: DiffDock's confidence score is valid ONLY for comparing poses of the SAME molecule. NEVER use it to rank different molecules against each other.**
+- **DiffDock:** The `diffdock_auto` tool is not deployed on the current MCP server and must not be called. If the user supplies external DiffDock results, its confidence score is valid only for comparing poses of the same molecule, never for ranking different molecules.
 - **Boltz-2 rapid screen:** Use when a fast "can it bind?" filter is needed before expensive docking (Tier 2 in the four-tier strategy). Returns binding probability and predicted log₁₀(IC₅₀). **Download the complex CIF file** from Boltz-2 output (`complex_cif_file` field).
 
 ## Phase 6: Result Ranking and Evaluation
@@ -283,7 +283,7 @@ Identify anchor interactions (from `summary_*.json` → `top_residues`) and modi
 **MAPPING GATE — Execute BEFORE interpreting results if the task references specific residues:**
 
 1. Retrieve the numbering scheme info from Skill 1 output.
-2. Compute the offset: `offset = UniProt_number − PDB_number`. Use `residue_mapper.py` if needed.
+2. Compute the offset: `offset = UniProt_number − PDB_number`. Use the deployed `residue_mapper` MCP tool if needed.
 3. When reporting results, ALWAYS specify the numbering scheme:
    - CORRECT: "Interaction visualizer detected HBond at ALA145 (rec_resid_pdb=145, rec_resid_mapped=719 with offset +574 = Ala719 PDB 1M17 = Ala743 UniProt P00533)"
    - WRONG: "Interaction visualizer detected HBond at ALA145" (ambiguous — which numbering?)
@@ -317,7 +317,7 @@ If the first round of screening yields no satisfactory candidates (e.g., all doc
 
 1. **What went wrong?** Diagnose using data: Was the pocket wrong (check if known actives for this target also score poorly)? Is the library chemically mismatched for this target (e.g., all hydrophilic molecules for a hydrophobic pocket)? Were filtering thresholds too strict? Was the docking box too small (check if progressive enlargement was tried)?
 
-2. **What will change this round?** Specify the concrete modification: Try alternative pocket (if dual detection found two); relax property filters and re-run; generate new molecules with REINVENT (invoke Skill 4) targeting the identified pocket properties; **increase docking box size if not already at 50 Å**; switch docking method to DiffDock/KarmaDock.
+2. **What will change this round?** Specify the concrete modification: Try alternative pocket (if dual detection found two); relax property filters and re-run; generate new molecules with REINVENT (invoke Skill 4) targeting the identified pocket properties; **increase docking box size if not already at the QuickVina2-GPU maximum of 47.625 Å**; switch docking method to KarmaDock.
 
 3. **How will success be measured?** Define the criterion: at least 3 molecules with Vina < −7.0 kcal/mol; or at least 1 molecule with EquiScore > 0.6.
 
@@ -327,7 +327,7 @@ If the first round of screening yields no satisfactory candidates (e.g., all doc
 
 | Failure | Likely cause | Recovery |
 |---------|-------------|----------|
-| All docking scores positive | Wrong pocket; receptor PDBQT corrupt; box too small | Re-detect pocket; re-convert receptor; **try progressive box enlargement 25→30→40→50 Å** |
+| All docking scores positive | Wrong pocket; receptor PDBQT corrupt; box too small | Re-detect pocket; re-convert receptor; **try progressive box enlargement 25→30→40→47.625 Å** |
 | `convert_smiles_to_format` fails for many molecules | Complex stereochemistry or charged species | Try alternative representation; generate 3D with RDKit first |
 | EquiScore and Vina rankings completely disagree | Different binding modes scored; possible incorrect pose | Re-dock top EquiScore hits; inspect poses visually via interaction-visualizer 2D diagram |
 | Multiple molecules return identical scores (e.g., all 0.0) | Systematic setup error | Check receptor format, box definition, and ligand preparation |

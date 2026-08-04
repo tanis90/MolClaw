@@ -74,7 +74,7 @@ For each top-ranked candidate from Module 1, run `molclaw-interaction-visualizer
 
 ### Residue Numbering (L3 Principle 17 — MANDATORY when task references specific residues)
 
-Use `--resid_offset N` (N = UniProt_number − PDB_number) so all CSV outputs include the mapped `rec_resid_mapped` column. Compute the offset from `residue_mapper.py` before invoking.
+Use `--resid_offset N` (N = UniProt_number − PDB_number) so all CSV outputs include the mapped `rec_resid_mapped` column. Compute the offset with the deployed `residue_mapper` MCP tool before invoking.
 
 CORRECT: "Interaction visualizer detected HBond at MET769 (PDB) = Met793 (UniProt, offset +24). This confirms the expected hinge interaction."
 WRONG: "Interaction visualizer did not find Met793." (False negative from numbering mismatch — check `rec_resid_mapped` column.)
@@ -108,7 +108,7 @@ Call `prolif_docking` (for batch docking poses) or `prolif_pdb` (for single stru
 - Need ProLIF-format fingerprint CSV for downstream pipeline compatibility
 - interaction-visualizer script is not available on the compute node
 
-**Residue numbering for ProLIF (L3 Principle 17):** ProLIF does NOT support `--resid_offset`. You must manually map ProLIF residue IDs using the mapping table from `residue_mapper.py`.
+**Residue numbering for ProLIF (L3 Principle 17):** ProLIF does NOT support `--resid_offset`. You must manually map ProLIF residue IDs using the mapping table returned by the `residue_mapper` MCP tool.
 
 ### Post-ProLIF Image Download (L3 Principle 15 — MANDATORY if Module 2B used)
 
@@ -203,7 +203,7 @@ When candidates share a common scaffold, combine interaction-visualizer CSV data
 |---------|-------------|----------|
 | EquiScore fails on some poses | Ligand format issue; atoms outside pocket box | Re-extract pocket with larger radius |
 | Interaction-visualizer detects zero interactions | Ligand not in pocket; wrong `--ligand_resname`; bad docking pose | Verify docking pose quality; check `--ligand_resname` matches HETATM resname |
-| Interaction-visualizer residue IDs don't match task | `--resid_offset` not set or wrong | Compute offset from `residue_mapper.py` and re-run |
+| Interaction-visualizer residue IDs don't match task | `--resid_offset` not set or wrong | Compute offset with `residue_mapper` and re-run |
 | ProLIF detects zero interactions (Module 2B) | Ligand not in pocket; or format conversion lost coordinates | Verify docking pose; re-convert PDBQT → SDF |
 | ProLIF residue IDs don't match task (Module 2B) | Numbering scheme mismatch | **Execute residue mapping (L3 Principle 17)** |
 | Consensus ranking contradicts all individual methods | Normalization issue with outliers | Remove outliers and re-normalize |

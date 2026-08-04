@@ -1,6 +1,6 @@
 ---
 name: molclaw-compound-retrieve
-description: Retrieve SMILES strings from PubChem database using compound names. 
+description: Retrieve SMILES strings by compound name using PubChem with an NCI resolver fallback.
 license: MIT license
 metadata:
     skill-author: PJLab
@@ -16,7 +16,7 @@ Note:
 The description of tool *retrieve_smiles_by_compoundname*.
 
 ```tex
-Retrieve SMILES strings from PubChem using compound names.
+Retrieve SMILES strings by compound name. The service queries PubChem first and falls back to the NCI resolver when PubChem is busy or unavailable.
 Args:
     compound_names (List[str]): List of input compound names (e.g., ["aspirin", "caffeine"])
 Return:

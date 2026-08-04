@@ -192,7 +192,7 @@ foldx_repaired_pdb = repair_result["output_dir"] + "/" + [
 When the user provides specific mutations to evaluate:
 
 1. Write mutation list file in FoldX format. Each line: `OrigAA(1-letter) + ChainID + ResNum + NewAA;`. Example: `LA42G;` (chain A, position 42, Leu→Gly). **Residue numbering (L3 Principle 17):** use PDB file numbering, not UniProt.
-2. Upload mutant file to server via `upload_file`.
+2. Base64-encode the mutant file and upload it with the deployed `base64_to_server_file` tool; use the returned server path as `mutant_file`.
 3. Call FoldX BuildModel:
 
 ```python

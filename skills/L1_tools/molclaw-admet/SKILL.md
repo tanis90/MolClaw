@@ -18,8 +18,8 @@ The description of tool *pred_mol_admet*.
 ```tex
 Predict the ADMET (absorption, distribution, metabolism, excretion, and toxicity) properties of the input molecules from smiles list or file.
 Args:
-    smiles_list (List[str]): List of input SMILES strings, (e.g., ["N[C@@H](Cc1ccc(O)cc1)C(=O)O", "CC(C)C1=CC=CC=C1"]), default is []
-    smiles_file (str): Path to a file containing SMILES strings (TXT or CSV format), default is ''
+    smiles_list (List[str]): Required list of input SMILES strings; pass [] when using smiles_file
+    smiles_file (str): Required path to a TXT/CSV SMILES file; pass '' when using smiles_list
 Return:
     status (str): success/error
     msg (str): message

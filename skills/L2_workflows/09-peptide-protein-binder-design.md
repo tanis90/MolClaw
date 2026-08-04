@@ -152,9 +152,11 @@ If both target 3D structure and binder/peptide monomer structure are available:
 
 **Download the HDOCK docked complex PDB:**
 ```python
+hdock_complex = hdock_result["output_files"]["best_model_pdb"]
+hdock_partner_chain = hdock_result["partner_chains"][0]
 response = await client.session.call_tool(
     "server_file_to_base64",
-    arguments={"file_path": hdock_result["output_complex"]}
+    arguments={"file_path": hdock_complex}
 )
 # Save as stepNN_hdock_complex.pdb
 ```
@@ -166,7 +168,7 @@ Run `molclaw-interaction-visualizer` in peptide mode on the validated complex st
 ```bash
 python molclaw_interaction_visualizer.py \
     --complex chai1_complex.pdb --mode peptide \
-    --partner_chain B --out_dir viz_out \
+    --partner_chain <hdock_partner_chain_or_known_chai1_partner_chain> --out_dir viz_out \
     --resid_offset <offset> --title "PeptideBinder-Target"
 ```
 

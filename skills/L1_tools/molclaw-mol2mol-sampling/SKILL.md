@@ -20,10 +20,10 @@ Generate new molecules sampling from the input molecule using different priors (
 Args:
     smiles (str): Input SMILES string
     n (int): Number of molecules for sampling
-    min_similarity (float): Minimum similarity threshold, default is 0.6
-    prior_type (str): Prior type for generation, options: ['scaffold_generic', 'scaffold', 'mmp', 'similarity', 'high_similarity', 'medium_similarity'], default is 'similarity'
-    lipinski (bool): Whether to apply Lipinski's rule of five filtering, default is True
-    filter_preset (str): Filter preset, options: ['none', 'minimal', 'default', 'strict'], default is 'default'
+    min_similarity (float): Required minimum similarity threshold (commonly 0.6)
+    prior_type (str): Required prior type; options: ['scaffold_generic', 'scaffold', 'mmp', 'similarity', 'high_similarity', 'medium_similarity'] (commonly 'similarity')
+    lipinski (bool): Required flag controlling Lipinski filtering (commonly True)
+    filter_preset (str): Required filter preset; options: ['none', 'minimal', 'default', 'strict'] (commonly 'default')
 Return:
     status (str): success/error
     msg (str): message
@@ -31,7 +31,7 @@ Return:
     output_smiles_list (List[str]): List of generated SMILES strings
 ```
 
-How to use tool *reinvent_denovo_sampling* :
+How to use tool *reinvent_mol2mol_sampling*:
 
 ```python
 response = await client.session.call_tool(

@@ -22,8 +22,8 @@ Compute the Tanimoto similarities between a target molecule and a list of candid
 Args:
     target_smiles (str): SMILES string of the target molecule
     candidate_smiles_list (List[str]): List of candidate molecule SMILES strings
-    radius (int): Morgan fingerprint radius, default is 2
-    nBits (int): Morgan fingerprint vector bits number, default is 2048
+    radius (int): Required Morgan fingerprint radius (commonly 2)
+    nBits (int): Required Morgan fingerprint vector bit count (commonly 2048)
 Return:
     status (str): success/error
     msg (str): message
@@ -57,7 +57,7 @@ Compute the count of shared structural fragments between a target molecule and a
 Args:
     target_smiles (str): SMILES string of the target molecule
     candidate_smiles_list (List[str]): List of candidate molecule SMILES strings
-    radius (int): Morgan fingerprint radius, default is 2
+    radius (int): Required Morgan fingerprint radius (commonly 2)
 Return:
     status (str): success/error
     msg (str): message

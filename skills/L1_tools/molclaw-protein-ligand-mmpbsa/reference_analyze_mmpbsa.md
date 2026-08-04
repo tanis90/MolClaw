@@ -37,7 +37,7 @@ response = await client.session.call_tool(
         "work_dir": "complex_workspace",
     },
 )
-result = DrugSDAClient.parse_result(response)
+result = client.parse_result(response)
 ```
 
 #### Example parameter sets

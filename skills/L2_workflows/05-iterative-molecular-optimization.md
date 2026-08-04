@@ -62,7 +62,7 @@ Each round consists of four steps forming an **Evaluate → Diagnose → Design 
 
 **Scene A evaluation:**
 1. Call `molecule_docking_quickvina_fullprocess` — record baseline docking score
-   - **Checkpoint A:** Score must be negative. If positive, execute progressive box enlargement (25→30→40→50 Å).
+   - **Checkpoint A:** Score must be negative. If positive, execute progressive box enlargement within the managed QuickVina2-GPU range (25→30→40→47.625 Å).
    - **Download** docking pose file (PDBQT) via `server_file_to_base64` → local save.
 2. Call `pred_binding_affinity_boltz2` — record binding probability and predicted affinity
    - **Download** complex CIF file (`complex_cif_file` field) — Category A.
@@ -377,7 +377,7 @@ The "Bottleneck" column records which target was prioritized in the NEXT round's
 | LLM designs invalid SMILES 3 times in a row | Complex starting molecule; LLM struggles with SMILES syntax | Switch to REINVENT `mol2mol_sampling` with `high_similarity` prior |
 | Docking score improves but ADMET worsens | Optimization inadvertently introduced metabolic liability | Next round explicitly targets ADMET improvement while constraining docking score not to worsen |
 | No improvement after 3 rounds | Molecule may be near local optimum | Try a larger structural change (scaffold hop via Skill 4 Mode B with `scaffold_generic`); or declare Pareto frontier reached |
-| Interaction residue IDs don't match task description | Numbering scheme mismatch (wrong `--resid_offset` or unmapped ProLIF output) | Recompute offset via `residue_mapper.py`; re-run interaction-visualizer with correct `--resid_offset` (L3 Principle 17) |
+| Interaction residue IDs don't match task description | Numbering scheme mismatch (wrong `--resid_offset` or unmapped ProLIF output) | Recompute offset via the `residue_mapper` MCP tool; re-run interaction-visualizer with correct `--resid_offset` (L3 Principle 17) |
 
 ## Quality Gates (Active Checkpoints)
 

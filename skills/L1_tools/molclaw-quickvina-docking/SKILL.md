@@ -55,6 +55,7 @@ Tool description:
 
 ```tex
 Perform molecular docking using QuickVina2-GPU (Accelerated version of AutoDock Vina).
+The server selects the output directory. The current QuickVina2-GPU backend accepts at most 47.625 Å per docking-box axis, 129 movable ligand atoms, and 47 ligand torsions.
 Args:
     pdb_file_path (str): Path to the protein receptor file (format .pdb)
     smiles (str): Input molecule SMILES string
@@ -95,7 +96,7 @@ for smiles in smiles_list:
 
 QuickVina outputs a predicted binding affinity in units of kcal/mol. Similar to AutoDock Vina, the scores are negative values, where a more negative value indicates stronger binding. The scoring function comprehensively accounts for steric complementarity (Gaussian attraction plus quadratic repulsion), hydrogen bonding, hydrophobic interactions, and an entropy penalty for rotatable bonds.
 
-**Docking Box Minimum Size:** Never set `pocket_size_x`, `pocket_size_y`, or `pocket_size_z` below 25.0 Å. If the pocket detection tool returns dimensions smaller than 25 Å on any axis, override that axis to 25.0 Å.
+**Docking Box Size:** Never set `pocket_size_x`, `pocket_size_y`, or `pocket_size_z` below 25.0 Å. If the pocket detection tool returns dimensions smaller than 25 Å on any axis, override that axis to 25.0 Å. Do not exceed 47.625 Å on any axis; larger boxes are rejected by the managed service before launching QuickVina2-GPU.
 
 **Screening Thresholds:** There is no universal absolute threshold for QuickVina or Vina, as binding pockets vary significantly across different targets in terms of size, hydrophobicity, and other properties. However, general empirical guidelines suggest that for drug-like small molecules (MW 300–500):
 
@@ -104,7 +105,7 @@ QuickVina outputs a predicted binding affinity in units of kcal/mol. Similar to 
 
 In practice, rather than relying on a fixed threshold, it is more common to rank all compounds for a specific target by their scores and select the **top n** for further validation.
 
-**Score Validation:** After each docking call, verify that the score is negative (kcal/mol). A positive `docking_affinity_value` indicates docking failure — do not accept it. If docking fails, try progressive box enlargement (25→30→40→50 Å per dimension) before switching to alternative methods.
+**Score Validation:** After each docking call, verify that the score is negative (kcal/mol). A positive `docking_affinity_value` indicates docking failure — do not accept it. If docking fails, try progressive box enlargement within the supported range (25→30→40→47.625 Å per dimension) before switching to alternative methods.
 
 **Note**: This skill workflow consists of five steps, some of which depend on other skills. Please refer carefully to the Markdown documentation of the dependent skills to ensure correct usage.
 

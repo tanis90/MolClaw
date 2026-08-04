@@ -20,10 +20,10 @@ Generate new molecules sampling from the input two warhead fragments.
 Args:
     warheads (str): SMILES of two warheads separated by '|', e.g., '*c1ccc(O)cc1|*N1CCNCC1'
     n (int): Number of molecules for sampling
-    filter_preset (str): Filter preset, options: ['none', 'minimal', 'default', 'strict'], default is 'default'
-    lipinski (bool): Whether to apply Lipinski's rule of five filtering, default is True
-    min_linker_atoms (int): Minimum number of atoms in the linker, default is 0
-    max_linker_atoms (int): Maximum number of atoms in the linker, default is 0
+    filter_preset (str): Required filter preset; options: ['none', 'minimal', 'default', 'strict'] (commonly 'default')
+    lipinski (bool): Required flag controlling Lipinski filtering (commonly True)
+    min_linker_atoms (int): Required minimum number of atoms in the linker (use 0 for no lower bound)
+    max_linker_atoms (int): Required maximum number of atoms in the linker (use 0 for no upper bound)
 Return:
     status (str): success/error
     msg (str): message

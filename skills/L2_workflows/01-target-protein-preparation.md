@@ -33,11 +33,11 @@ No upstream skill dependency. This skill is itself the starting point for most w
 
 Protein input may arrive in six forms. Identify the form first, then follow the corresponding path.
 
-**PDB ID (e.g., "2L3R", "6LU7"):** Call `retrieve_protein_structure_by_pdb_id`. This returns both `fasta_path` and `prot_structure_path`. Record the resolution and method (X-ray/cryo-EM/NMR) in the log — this affects downstream reliability.
+**PDB ID (e.g., "2L3R", "6LU7"):** Call `retrieve_protein_structure_by_pdb_id`. This returns `prot_structure_path`; the file is normally `.pdb` and may be `.cif` when the automatic PDB-to-mmCIF fallback is used. The tool does not return `fasta_path`. Record resolution and method only when obtained from a separate authoritative source.
 
 **Gene name (e.g., "TP53", "EGFR"):** Call `retrieve_protein_structure_by_gene_name`. If it fails, fall back to: (1) search UniProt for the ID, then try the UniProt path; (2) ask the user for a sequence and use ESMFold; (3) if neither works, report failure with the specific error.
 
-**UniProt ID (e.g., "P38398"):** Call `retrieve_protein_structure_by_uniprot_id` to retrieve an AlphaFold structure. If it fails, suggest ESMFold prediction from the sequence (retrieve the sequence from UniProt first).
+**UniProt ID (e.g., "P38398"):** Call `retrieve_protein_structure_by_uniprot_id` to retrieve the selected available structure according to `sort_by`; the result may come from an experimental RCSB entry or AlphaFold and may be `.pdb` or `.cif`. If it fails, suggest ESMFold prediction from the sequence (retrieve the sequence from UniProt first).
 
 **Amino acid sequence (raw or FASTA):** Validate with `is_valid_protein_sequence`. If valid and length ≤ 800 residues, call `pred_protein_structure_esmfold`. If length > 800, use `chai1_predict` with `mode="sequence"` instead — ESMFold quality degrades significantly beyond 800 residues. For multi-chain complexes, always use Chai-1 or Boltz-2, never ESMFold.
 
@@ -51,7 +51,7 @@ After acquiring the protein structure via any path above:
 
 1. **Download the structure file** from the MCP server to the local workspace using `server_file_to_base64` → local decode and save.
 2. **Verify download:** `ls -la <filename>` — file must exist with size > 0. A zero-byte file indicates download failure; retry.
-3. **Save with step-numbered name:** e.g., `step01_raw_protein.pdb`, `step01_esmfold_prediction.pdb`.
+3. **Save with a step-numbered name while preserving the returned extension:** e.g., `step01_raw_protein.pdb`, `step01_raw_protein.cif`, or `step01_esmfold_prediction.pdb`.
 
 **For ESMFold/Chai-1 predictions:** The predicted structure file is a Category A (user-critical) output. Download is mandatory — this file is the structural basis for all downstream analysis.
 
@@ -75,6 +75,8 @@ This information does NOT replace computational analysis but informs downstream 
 ## Structure Quality Assessment
 
 Before any repair, run a health check to inform repair decisions.
+
+If retrieval returned `.cif`, keep the original mmCIF artifact and first call `fix_pdb` with its non-destructive defaults to produce a PDB for the `calculate_pdb_*` tools, which parse PDB records. The managed `fix_pdb` implementation accepts mmCIF input.
 
 **Step 1 — Basic statistics.** Call `calculate_pdb_basic_info`. Record: chain count (multi-chain?), heteroatom count (ligands/cofactors/waters?), residue count (compare to expected sequence length to estimate missing regions).
 
@@ -114,7 +116,7 @@ Before any repair, run a health check to inform repair decisions.
 - Input sequence start (if predicted): UniProt residue [N] = tool residue 1
 ```
 
-**If the task description references specific residues:** Immediately check whether those residue numbers match the structure's numbering scheme. If not, plan a mapping step (execute before any residue-specific analysis downstream). Use `residue_mapper.py` if available, or compute the offset manually from DBREF records or known sequence boundaries.
+**If the task description references specific residues:** Immediately check whether those residue numbers match the structure's numbering scheme. If not, plan a mapping step (execute before any residue-specific analysis downstream). Call the deployed `residue_mapper` MCP tool, or compute the offset manually from DBREF records or known sequence boundaries.
 
 ## Chain Processing Strategy
 
@@ -129,7 +131,7 @@ Before any repair, run a health check to inform repair decisions.
 
 Call `fix_pdb` with parameters chosen based on the downstream task:
 
-| Parameter | Default | For docking/MD | For ProteinMPNN | For pocket detection |
+| Parameter | Workflow setting | For docking/MD | For ProteinMPNN | For pocket detection |
 |-----------|---------|---------------|-----------------|---------------------|
 | `add_hydrogens` | True | True | **False** | True |
 | `remove_heterogens` | True | True | True | True |
@@ -197,7 +199,7 @@ Download the FoldX-repaired PDB via `server_file_to_base64` — Category A outpu
 | Prepared structure | `prepared_pdb` | PDB file path | Skills 2, 6, 7, 8, 9, 10, 11 | **A — MUST download** |
 | Chain information | `chain_info` | Dict: {chain_id: sequence} | Skills 9, 10, 11 | B — record in log |
 | Quality summary | `quality_summary` | Dict: {source_type, avg_plddt_or_bfactor, residue_count, chain_count} | All downstream skills (for reporting) | B — record in log |
-| Sequence (FASTA) | `fasta_path` | FASTA file path | Skills 9, 10 | **A — MUST download** |
+| Sequence (FASTA, when separately retrieved and saved) | `fasta_path` | FASTA file path | Skills 9, 10 | **A — MUST download** |
 | Numbering scheme info | `numbering_scheme` | Dict: {scheme, offset, input_seq_start} | Skills 2, 6, 8, 9, 10, 11 | B — record in log |
 
 | FoldX-repaired structure | `foldx_repaired_pdb` | PDB file path | FoldX modes in Skills 9, 10 (Scene B/F) | **A — MUST download** (only when FoldX downstream) |

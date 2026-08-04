@@ -19,7 +19,7 @@ The description of tool *retrieve_protein_sequence*.
 Retrieve protein sequence data for a given identifier (gene name or uniprot id) and organism.
 Args:
     identifier (str): Input gene name (e.g., 'TP53') or uniprot id (e.g., 'P04637')
-    organism (str): Species name, default is "Homo sapiens" 
+    organism (str): Required species name, e.g. "Homo sapiens"
 Return:
     status (str): success/error
     msg (str): message

@@ -19,8 +19,8 @@ The description of tool *reinvent_denovo_sampling*.
 Generate new molecules de novo.
 Args:
     n (int): Number of molecules for sampling
-    lipinski (bool): Whether to apply Lipinski's rule of five filtering, default is True
-    filter_preset (str): Filter preset, options: ['none', 'minimal', 'default', 'strict', 'druglike', 'all'], default is 'druglike'
+    lipinski (bool): Required flag controlling Lipinski filtering (commonly True)
+    filter_preset (str): Required filter preset; options: ['none', 'minimal', 'default', 'strict', 'druglike', 'all'] (commonly 'druglike')
 Return:
     status (str): success/error
     msg (str): message

@@ -20,9 +20,9 @@ Generate new peptide molecules sampling from the input peptide sequence.
 Args:
     peptide (str): SMILES representation of a peptide sequence, with amino acid residues separated by '|?|', e.g., 'N[C@@H](CCCCN)C(=O)|?|N[C@@H](CC(C)C)C(=O)|?|N[C@@H](CCCNC(=N)N)C(=O)' 
     n (int): Number of molecules for sampling
-    filter_preset (str): Filter preset, options: ['none', 'minimal', 'default', 'strict'], default is 'default'
-    mw_min (float): Minimum molecular weight, default is 0.0
-    mw_max (float): Maximum molecular weight, default is 0.0
+    filter_preset (str): Required filter preset; options: ['none', 'minimal', 'default', 'strict'] (commonly 'default')
+    mw_min (float): Required minimum molecular weight (use 0.0 for no lower bound)
+    mw_max (float): Required maximum molecular weight (use 0.0 for no upper bound)
 Return:
     status (str): success/error
     msg (str): message

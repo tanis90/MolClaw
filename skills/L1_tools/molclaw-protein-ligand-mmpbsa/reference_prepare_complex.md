@@ -46,7 +46,7 @@ response = await client.session.call_tool(
         "md_time": 100.0,
     },
 )
-result = DrugSDAClient.parse_result(response)
+result = client.parse_result(response)
 complex_dir = result.get("output_dir")
 ```
 

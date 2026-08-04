@@ -165,7 +165,7 @@ Use the two tools in sequence via API calls:
 2. Pass that `run_dir` to *extract_bioemu_structures* for per-frame structure extraction.
 
 ```python
-client = DrugSDAClient("http://180.184.86.2:32208/mcp")
+client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
 if not await client.connect():
     print("connection failed")
     return

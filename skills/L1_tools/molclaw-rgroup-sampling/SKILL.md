@@ -20,8 +20,8 @@ Generate new molecules sampling from the input scaffold.
 Args:
     scaffold (str): Input scaffold SMILES string containing R-group position markers such as [*:1], [*:2], etc. e.g., 'c1ccc([*:1])cc1C(=O)N[*:2]'
     n (int): Number of molecules for sampling
-    lipinski (bool): Whether to apply Lipinski's rule of five filtering, default is True
-    filter_preset (str): Filter preset, options: ['none', 'minimal', 'default', 'strict'], default is 'default'
+    lipinski (bool): Required flag controlling Lipinski filtering (commonly True)
+    filter_preset (str): Required filter preset; options: ['none', 'minimal', 'default', 'strict'] (commonly 'default')
 Return:
     status (str): success/error
     msg (str): message

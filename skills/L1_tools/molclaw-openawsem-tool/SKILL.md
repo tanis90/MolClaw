@@ -159,7 +159,7 @@ frame_files = result["frame_files"]
 Use `openawsem_sim` first, then feed its `simulation_dir` into `openawsem_traj_extract`.
 
 ```python
-client = DrugSDAClient("http://180.184.86.2:32208/mcp")
+client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
 if not await client.connect():
     print("connection failed")
     return

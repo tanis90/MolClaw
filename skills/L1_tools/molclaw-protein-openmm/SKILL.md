@@ -29,15 +29,14 @@ Args:
     md_time (float): Production MD time in picoseconds, default 100000.0.
     platform (str): OpenMM compute platform, default 'CUDA'.
     full_md (bool): Run full MD procedure if True, default False.
-    dry_run (bool): Validate setup and produce run directory without simulation, default False.
 Return:
     status (str): 'success' or 'error'.
     msg (str): Human-readable execution summary.
-    output_dir (str): Run-specific directory under tool_result/openmm_md_result.
-    work_dir (str | None): Final OpenMM working directory containing generated files.
-    protein_pdb (str): Resolved input protein path.
+    command (str): The invoked command ('protein_openmm_md').
+    run_dir (str | None): Final run directory under tool_result/openmm_md_result.
+    work_dir (str | None): Same as run_dir for compatibility.
     trajectory_path (str | None): Path to md_traj.dcd when available.
-    topology_path (str | None): Path to a topology PDB used for frame extraction.
+    energy_log (str | None): Path to md.log when available.
     generated_files (List[str]): File paths relative to work_dir.
     md_time (float): Echoed requested MD time in ps.
     solvent_type (str): Echoed solvent mode.
@@ -58,8 +57,7 @@ response = await client.session.call_tool(
         "force_field": "amber14",
         "md_time": 1000.0,
         "platform": "CUDA",
-        "full_md": True,
-        "dry_run": False
+        "full_md": True
     }
 )
 result = client.parse_result(response)
@@ -79,8 +77,7 @@ key_output = result["work_dir"]
     "force_field": "amber14",
     "md_time": 1000.0,
     "platform": "CUDA",
-    "full_md": True,
-    "dry_run": False
+    "full_md": True
 }
 
 # 2) Variant mode
@@ -91,8 +88,7 @@ key_output = result["work_dir"]
     "force_field": "charmm36",
     "md_time": 10000.0,
     "platform": "CUDA",
-    "full_md": False,
-    "dry_run": False
+    "full_md": False
 }
 ```
 
@@ -169,7 +165,7 @@ Use the two tools in sequence via API calls:
 2. Pass that `work_dir` into *openmm_extract_frames* to extract evenly spaced PDB frames.
 
 ```python
-client = DrugSDAClient("http://180.184.86.2:32208/mcp")
+client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
 if not await client.connect():
     print("connection failed")
     return

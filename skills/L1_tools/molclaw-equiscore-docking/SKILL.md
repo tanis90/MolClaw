@@ -76,29 +76,9 @@ Important:
 Two valid modes:
 - Mode A: user already provides `docking_result_sdf_path` -> use directly.
 
-- Mode B: only SMILES provided -> first generate docking poses using the `molecule_docking_quickvina_fullprocess` tool (which accepts PDB + SMILES directly and handles all format conversions internally), then convert the output docking pose file to SDF and set docking_result_sdf_path to the resulting docked file before continuing to step6. This ensures receptor-relative poses.
+- Mode B: only SMILES provided -> first generate docking poses using `molecule_docking_quickvina_fullprocess`, then perform a **pose-preserving** PDBQT-to-SDF conversion and set `docking_result_sdf_path` to that converted docked file before continuing to step 6.
 
-When converting formats, use this tool:
-
-```python
-response = await client.session.call_tool(
-    "convert_smiles_to_format",
-    arguments={"inputs": filtered_smiles, "target_format": "sdf"}
-)
-result = client.parse_result(response)
-convert_results = result["convert_results"]
-```
-
-Tool contract:
-
-```text
-convert_smiles_to_format(inputs: List[str], target_format: str)
-Args:
-  inputs: list of SMILES strings or .smi file paths
-  target_format: sdf/mol/mol2/pdb/pdbqt/xyz/cif/inchi
-Return:
-  status, msg, convert_results[{input, output_file}]
-```
+The deployed `convert_smiles_to_format` tool accepts SMILES strings or `.smi` files; it does **not** convert an existing docked PDBQT pose. Using it here would regenerate ligand coordinates and lose the receptor-relative pose. Perform the file conversion with a pose-preserving converter such as Open Babel where available, then upload the resulting SDF with `molclaw-file-transfer`. If no such conversion path is available, require an already docked SDF instead of substituting a raw SMILES-derived SDF.
 
 step 6. Run EquiScore pocket extraction first.
 - Use `molclaw-equiscore-tool` -> `equiscore_pocket`.

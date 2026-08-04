@@ -13,7 +13,7 @@ Note:
 - For PDB file inputs, it is recommended to preprocess them using `molclaw-pdbfixer` before execution.
 - Please refer to skill `molclaw-scp-server` to complete tool invocation.
 
-- GoCa executable path is fixed by wrapper to `/root/lwj/wll/code/drug/GoCa/GoCa`.
+- GoCa executable path is fixed by the managed wrapper to `/data/lwj/wll/code/drug/GoCa/GoCa`.
 
 
 ## Usage

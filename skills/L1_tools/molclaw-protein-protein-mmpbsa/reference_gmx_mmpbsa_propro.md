@@ -48,7 +48,7 @@ response = await client.session.call_tool(
         "dry_run": False,
     },
 )
-result = DrugSDAClient.parse_result(response)
+result = client.parse_result(response)
 ```
 
 #### Example parameter sets

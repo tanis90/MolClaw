@@ -1,7 +1,7 @@
 ---
 name: molclaw-interaction-visualizer
 description: >
-  **PRIMARY tool for all single-structure interaction analysis.** Local protein–ligand /
+  **PRIMARY tool for all single-structure interaction analysis.** MCP-exposed protein–ligand /
   peptide / protein–protein interaction analysis and Schrödinger-style multi-dimensional
   visualization. Pure Python/NumPy engine covering 9 interaction types with 2D diagram,
   3D PyMOL rendering, residue bar, interface heatmap, interface network, and decision-ready
@@ -18,7 +18,7 @@ metadata:
       L3 Principle 13 (Computation-first — interaction conclusions must come from tool output)
 ---
 
-# Interaction Visualizer — Local Analysis & Visualization
+# Interaction Visualizer — MCP and Local Analysis
 
 Note: 
 - Local files are not directly accessible by the server. Please upload them to the server using `molclaw-file-transfer` before execution. 
@@ -26,10 +26,9 @@ Note:
 - Please refer to skill `molclaw-scp-server` to complete tool invocation.
 
 > [!NOTE]
-> This is a **local tool** — the Python script `molclaw_interaction_visualizer.py` runs
-> directly on the compute node. No MCP server connection needed.
-> **Required:** `numpy`, `matplotlib`.
-> **Optional:** `rdkit` (for 2D ligand diagram + SDF/MOL2/XYZ input), `pymol` (for 3D rendering), `Pillow`.
+> The current MolClaw server exposes this capability as the MCP tool
+> `interaction_visualizer`. The bundled `molclaw_interaction_visualizer.py` remains
+> available as an optional local CLI; it does not need to be uploaded to the server.
 
 ## When To Use This Skill
 
@@ -78,27 +77,36 @@ Note:
 |-----------|----------------|
 | `--complex` | Pre-merged complex PDB from docking output, Boltz-2/Chai-1 predicted structure, MD extracted frame, or crystal structure |
 | `--receptor` | Protein PDB from `molclaw-protein-structure-retrieve` → `molclaw-pdbfixer`, or predicted structure |
-| `--ligand` | Docking pose file from `molclaw-quickvina-docking` (.pdbqt), `molclaw-diffdock-auto` (.sdf), or any .mol/.mol2/.xyz |
+| `--ligand` | Docking pose file from `molclaw-quickvina-docking` (.pdbqt), `molclaw-karmadock-tool` (.sdf), an externally supplied DiffDock SDF, or any .mol/.mol2/.xyz |
 | `--partner_pdb` | Partner protein PDB for peptide/protein modes (from `molclaw-extract-chains` or separate structure) |
 | `--resid_offset` | PDB→UniProt offset computed from sequence alignment (L3 Principle 17) |
 | `--residue_roles_json` | User-provided or literature-derived residue functional annotations |
 | `--score` | Docking affinity from upstream docking tool (kcal/mol) |
 | `--smiles` | Ligand SMILES from user input or molecule retrieval |
 
-## Setup — Upload Script to Server
+## MCP Invocation
 
 ```python
-# Upload the interaction visualizer script to the server
 response = await client.session.call_tool(
-    "upload_file",
-    arguments={"local_path": "/path/to/molclaw_interaction_visualizer.py"}
+    "interaction_visualizer",
+    arguments={
+        "mode": "ligand",
+        "receptor_path": "/server/path/receptor_fixed.pdb",
+        "ligand_path": "/server/path/docking_pose.pdbqt",
+        "resid_offset": 0,
+        "score": -8.3,
+        "skip_pymol3d": True
+    }
 )
-script_path = client.parse_result(response)["remote_path"]
+result = client.parse_result(response)
+output_dir = result["output_dir"]
+key_files = result["key_files"]
 ```
 
-Alternatively, if the script is already present on the server at a known path, skip the upload step.
+`mode` is required and must be one of `ligand`, `peptide`, or `protein`. Input paths
+must be server-side paths; use `molclaw-file-transfer` for local input files.
 
-## Usage Patterns
+## Bundled Local CLI Usage Patterns
 
 ### Pattern 1: Single Complex File (Ligand Mode)
 
@@ -172,7 +180,7 @@ python molclaw_interaction_visualizer.py \
     --skip_diagram2d --skip_bar --skip_heatmap --skip_network --skip_pymol3d
 ```
 
-## Full Parameter Reference
+## Bundled Local CLI Parameter Reference
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -332,7 +340,7 @@ These are qualitative drug-chemist-style labels. They are NOT quantitative bindi
 | Upstream Skill | Provides | This Skill Uses As |
 |----------------|----------|--------------------|
 | `molclaw-quickvina-docking` | PDBQT docking pose + affinity score | `--ligand` (PDBQT) + `--score` |
-| `molclaw-diffdock-auto` | SDF docking pose + confidence | `--ligand` (SDF) + `--score` |
+| Externally supplied DiffDock result | SDF docking pose + confidence | `--ligand` (SDF) + `--score`; `diffdock_auto` is not deployed on the current MCP server |
 | `molclaw-karmadock-tool` | SDF docking pose + score | `--ligand` (SDF) + `--score` |
 | `molclaw-pdbfixer` | Cleaned receptor PDB | `--receptor` |
 | `molclaw-fix-pdb` | Fixed PDB structure | `--receptor` or `--complex` |
@@ -342,7 +350,7 @@ These are qualitative drug-chemist-style labels. They are NOT quantitative bindi
 | `molclaw-esmfold` | Predicted protein structure | `--receptor` |
 | `molclaw-proteinmpnn-tool` | Designed sequence + structure | `--complex` (protein mode) |
 | `molclaw-evobind-tool` | Peptide binder + complex | `--complex` (peptide mode) |
-| `molclaw-hdock-tool` | Protein-protein docked complex | `--complex` (protein mode) |
+| `molclaw-hdock-tool` | Protein-protein or protein-peptide docked complex | `--complex` with protein mode for protein-protein, or peptide mode with `partner_chain` from `hdock_tool.partner_chains` for protein-peptide |
 | `molclaw-extract-chains` | Individual chain PDB files | `--receptor` / `--partner_pdb` |
 | `molclaw-compound-retrieve` | Ligand SMILES | `--smiles` |
 

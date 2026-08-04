@@ -1,6 +1,6 @@
 ---
 name: molclaw-scp-server
-description: All tools utilized within molclaw skills connect via the MCP protocol. This skill serves as a unified guide for using the MCP Server. This skill must be loaded to create the MCP server before invoking any tools. 
+description: All tools utilized within MolClaw skills connect via the MCP protocol. This skill is the unified guide for connecting to the deployed MCP server before invoking tools.
 license: MIT license
 metadata:
     skill-author: PJLab
@@ -15,10 +15,12 @@ If MCP environment. is not installed, please run `pip install mcp`.
 The server is defined as below:
 
 ```python
-import os
 import json
 from mcp.client.streamable_http import streamablehttp_client
 from mcp import ClientSession
+
+DrugSDA_Tool_SERVER_URL = "https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool"
+DrugSDA_Tool_API_KEY = "sk-7e8704c0-b838-44e9-ab74-f116037bbf35"
 
 class DrugSDAClient:    
     def __init__(self, server_url: str):
@@ -28,13 +30,9 @@ class DrugSDAClient:
     async def connect(self):
         print(f"server url: {self.server_url}")
         try:
-            api_key = os.getenv("SCP_HUB_API_KEY")
-            if not api_key:
-                raise ValueError("SCP_HUB_API_KEY is not set. Please configure it in .env.")
-
             self.transport = streamablehttp_client(
                 url=self.server_url,
-                headers={"SCP-HUB-API-KEY": api_key}
+                headers={"SCP-HUB-API-KEY": DrugSDA_Tool_API_KEY}
             )
             self.read, self.write, self.get_session_id = await self.transport.__aenter__()
             
@@ -80,8 +78,8 @@ The **initialization** and **shutdown** of the MCP server are shown below:
 
 ```python
 ## When start, connect the MCP server
-client = DrugSDAClient()
-if not await client.connect(server_url):
+client = DrugSDAClient(DrugSDA_Tool_SERVER_URL)
+if not await client.connect():
     print("connection failed")
     return
 
@@ -89,4 +87,4 @@ if not await client.connect(server_url):
 await client.disconnect() 
 ```
 
-**Note**: For most tools, the default server endpoint (`server_url`) is `https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool`.
+**Note**: The deployed MolClaw tool endpoint is `https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool`.

@@ -12,10 +12,10 @@ metadata:
 
 ### 1. Scenario Description
 
-Cleans a receptor PDB (adding hydrogens, modeling missing atoms) so that `prepare_complex` can receive a validated `protein` path.
+Cleans a receptor PDB or mmCIF structure (adding hydrogens, modeling missing atoms) and writes a PDB so that `prepare_complex` can receive a validated `protein` path.
 
 Args:
-- `input_path` (str): Source PDB file (required).
+- `input_path` (str): Source PDB or mmCIF file (required).
 - `output_path` (str | None): Optional override for the repaired file; defaults to the MCP sandbox.
 - `add_hydrogens` (bool): Add hydrogens after repairs.
 - `ph` (float): pH for protonation (default: 7.0).
@@ -46,7 +46,7 @@ response = await client.session.call_tool(
         "dry_run": False,
     },
 )
-result = DrugSDAClient.parse_result(response)
+result = client.parse_result(response)
 fixed_protein = result.get("output_file")
 await client.disconnect()
 ```
