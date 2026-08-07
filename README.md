@@ -98,7 +98,21 @@ source .env
 set +a
 ```
 
-### 3) Claude Code Interact with Skills
+### 3) Connect Claude Code to the MolClaw MCP Server
+
+Register the deployed DrugSDA-Tool endpoint in Claude Code:
+
+```bash
+claude mcp add \
+  molclaw-scp \
+  --transport http \
+  'https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool' \
+  --header "SCP-HUB-API-KEY: <YOUR-API-KEY>"
+```
+
+Replace `<YOUR-API-KEY>` with the SCP Hub key configured through `.env.template`.
+
+### 4) Claude Code Interact with Skills
 
 Copy the Skills into your Claude Code workspace and then you can interact with them in your conversations.
 
@@ -111,7 +125,7 @@ claude
 # then run /init and ask your task
 ```
 
-### 4) Benchmark Runs
+### 5) Benchmark Runs
 
 Use the commands below for baseline and Claude benchmark runs; each command performs inference and automatic `molbench` evaluation.
 
@@ -125,7 +139,7 @@ bash molclaw_run/infer/claude_agent/launch_claude.sh --cfg config/claude_templat
 
 You can switch datasets/tasks by replacing the config file with other templates in `config/`.
 
-### 5) Evaluate an Existing Run Directory
+### 6) Evaluate an Existing Run Directory
 
 If you have an existing run directory with generated outputs and want to evaluate it under `molbench` protocols, you can use the unified evaluation script:
 

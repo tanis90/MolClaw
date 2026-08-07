@@ -12,27 +12,46 @@ SCP (Science Context Protocol) is an open-source standard protocol designed to a
 
 If MCP environment. is not installed, please run `pip install mcp`.
 
+Configure the credential through the repository environment template. Never
+write an API key into a skill, source file, command example, or committed
+configuration file.
+
+```bash
+cd /path/to/MolClaw
+cp .env.template .env
+# Set SCP_HUB_API_KEY in .env, then load it into the current shell:
+set -a
+source .env
+set +a
+```
+
 The server is defined as below:
 
 ```python
 import json
+import os
 from mcp.client.streamable_http import streamablehttp_client
 from mcp import ClientSession
 
 DrugSDA_Tool_SERVER_URL = "https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool"
-DrugSDA_Tool_API_KEY = "sk-7e8704c0-b838-44e9-ab74-f116037bbf35"
 
 class DrugSDAClient:    
     def __init__(self, server_url: str):
         self.server_url = server_url
         self.session = None
+        self.api_key = os.environ.get("SCP_HUB_API_KEY")
+        if not self.api_key:
+            raise RuntimeError(
+                "SCP_HUB_API_KEY is not set. Copy .env.template to .env, "
+                "set the key, and load .env into the current shell."
+            )
         
     async def connect(self):
         print(f"server url: {self.server_url}")
         try:
             self.transport = streamablehttp_client(
                 url=self.server_url,
-                headers={"SCP-HUB-API-KEY": DrugSDA_Tool_API_KEY}
+                headers={"SCP-HUB-API-KEY": self.api_key}
             )
             self.read, self.write, self.get_session_id = await self.transport.__aenter__()
             

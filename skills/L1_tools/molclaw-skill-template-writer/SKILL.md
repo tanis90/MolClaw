@@ -85,7 +85,7 @@ Fill in all YAML metadata fields using the following specifications:
 | `metadata.source-platform` | String | Platform used | `Claude Code` or `OpenClaw` |
 | `metadata.crystallization-trigger` | Enum | Phase 0.1 | `T1`, `T2`, `T3`, `T4`, or `T5` |
 | `metadata.confidence` | Enum | Always initial | `LOW` (first generation) |
-| `metadata.validation-record` | List | Source task ID | `["task-2026-04-01-001"]` |
+| `metadata.validation-record` | List | Source task ID | `["task-001"]` |
 | `metadata.methodology-ref` | Multi-line | L3 principles used | See existing L2 skills for format |
 
 **Naming Convention for `name` field:**
@@ -213,6 +213,7 @@ Run through the validation checklist from L2-12 Phase 4:
 - [ ] All SCP tool names are snake_case
 - [ ] No kebab-case skill names in tool invocation contexts
 - [ ] All placeholders have documented defaults
+- [ ] No API keys, tokens, or credentials are embedded; reference environment variable names defined in `.env.template`
 
 **Logical checks:**
 - [ ] Phase dependencies are correctly ordered
