@@ -138,6 +138,7 @@ The agent execution framework is defined in `system_prompt_FULL.md`. It specifie
 1. **5-phase execution:** read skills → plan → self-check → execute → synthesize
 2. **File naming conventions:** sequential (`step01_`, `step02_`), iterative (`round01_`, `round02_`), retry (`_retry1`)
 3. **Required outputs:** `result.md` (final summary) and `run_log.md` (step-by-step log, written incrementally)
+4. **产出上传（必须）：** `result.md` 和 `run_log.md` 写完后，必须调用 `python /workspace/.tools/upload.py <文件路径>` 上传，将返回的 URL 写入 `result.md` 的文件索引段落。有其他产出文件（PDB、SDF、PNG 等）也一并上传。不上传 = 任务未完成。
 
 ### Key enforcement rules from `system_prompt_FULL.md`
 
