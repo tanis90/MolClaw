@@ -137,18 +137,19 @@ The agent execution framework is defined in `system_prompt_FULL.md`. It specifie
 
 1. **5-phase execution:** read skills → plan → self-check → execute → synthesize
 2. **File naming conventions:** sequential (`step01_`, `step02_`), iterative (`round01_`, `round02_`), retry (`_retry1`)
-3. **Required outputs:** `result.md`（最终摘要；战役/优化类任务可产出 `final_report.md` 作为最终报告，两者至少其一必须有）和 `run_log.md`（step-by-step log, written incrementally）
-4. **产出上传（必须）：** 所有产出文件——中间结果和最终报告一视同仁——完成后必须逐一调用 `python .tools/upload.py <文件路径>`（相对当前工作目录）上传并收集 URL。范围（对应方法论 Category A 清单）：
-   - 报告与日志：`result.md` / `final_report.md`、`run_log.md`、`literature_review.md`、`sar_knowledge_base.md` 等一切研究报告
-   - 数据表：`*.csv` / `*.tsv` / `*.json`（如 `round*_docking_results.csv`、`admet_*.json`、`top_candidates.csv`）
-   - 分子列表：`*.smi` / `*.sdf`
-   - 结构文件：`*.pdb` / `*.cif` / `*.pdbqt` / `*.mol2`
-   - 可视化图像：`*.png` 等一切图像
-   - 兜底规则：工作目录内除 CLAUDE.md 与 skill 参考目录外，**每一个自己生成的文件都要上传**（含所有 `step*` / `round*` / `*_retry*` 命名文件）
-   **最终回答必须以"已上传文件清单"开头**：逐行列出 `文件名: OSS URL`（一行一个）。**最终回答不含上传清单 = 任务未完成**；正文保持简洁，长内容写进报告文件（最终回答有 16 KiB 截断，清单放开头才不会被切掉）。
-5. **工作目录纪律（必须）：** 你的工作目录就是当前目录。所有产出文件（result.md、run_log.md、脚本、数据、图表）必须写入当前目录或其子目录；禁止写入 `/workspace` 根目录或任何其他绝对路径——那是共享区，会覆盖其他并发任务。
-6. **MCP 工具原生接入：** 计算工具（docking、分子生成、ADMET、蛋白结构检索等，共 81 个）已作为原生 MCP 工具自动加载，命名 `mcp__DrugSDA-Tool__*`，与 Read/Write/Bash 等内置工具采用完全相同的调用方式；参数与返回字段见各 skill 的参考块及工具自带的 schema。
-7. **同步执行（必须）：** 你是同步执行的 agent：一次会话 = 一次任务，所有计算与产出必须在本轮回复内完成。禁止声称"后台执行"、"稍后通知"、"异步回调"——你没有任何后台机制，会话结束后无法再联系任何人；也不要依赖后台子进程或子会话交付最终结果。
+3. **Required outputs:** `result.md` (final summary; campaign/optimization tasks may produce `final_report.md` as the final report instead — at least one of the two is mandatory) and `run_log.md` (step-by-step log, written incrementally)
+4. **Output upload (mandatory):** Every output file — intermediate results and final reports alike — must be uploaded individually via `python .tools/upload.py <file path>` (relative to the working directory), collecting the returned URLs. Scope (mirrors the methodology's Category A list):
+   - Reports and logs: `result.md` / `final_report.md`, `run_log.md`, `literature_review.md`, `sar_knowledge_base.md`, and any other research report
+   - Data tables: `*.csv` / `*.tsv` / `*.json` (e.g. `round*_docking_results.csv`, `admet_*.json`, `top_candidates.csv`)
+   - Molecule lists: `*.smi` / `*.sdf`
+   - Structure files: `*.pdb` / `*.cif` / `*.pdbqt` / `*.mol2`
+   - Visualization images: `*.png` and any other image format
+   - Catch-all: every self-produced file in the working directory gets uploaded (CLAUDE.md and the skill reference directories excluded), including all `step*` / `round*` / `*_retry*` files
+
+   **The final answer must begin with the uploaded-file manifest**: one line per file, `file name: OSS URL`. **A final answer without the manifest means the task is not complete.** Keep the answer body concise — long content belongs in the report files (the final answer is clamped at 16 KiB; the manifest at the head survives truncation).
+5. **Working-directory discipline (mandatory):** Your working directory is the current directory. All output files (reports, logs, scripts, data, figures) must be written to the current directory or its subdirectories. Never write to `/workspace` or any other absolute path — that area is shared and concurrent tasks would clobber each other.
+6. **Native MCP tools:** The computation tools (docking, molecular generation, ADMET, protein structure retrieval, etc. — 81 in total) are auto-loaded as native MCP tools named `mcp__DrugSDA-Tool__*`, invoked exactly like the built-in Read/Write/Bash tools; arguments and return fields are documented in each skill's reference block and in the tools' own schemas.
+7. **Synchronous execution (mandatory):** You are a synchronous agent: one session equals one task, and all computation and outputs must be completed within this reply. Never claim that work is "running in the background", that you will "notify later", or offer "async callbacks" — there is no background mechanism and nobody can be reached after the session ends; do not rely on background subprocesses or peer sessions to deliver results.
 
 ### Key enforcement rules from `system_prompt_FULL.md`
 
