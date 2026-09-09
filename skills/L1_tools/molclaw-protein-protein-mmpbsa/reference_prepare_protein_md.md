@@ -36,21 +36,7 @@ Return:
 
 ### 2. How to use tool `prepare_protein_md`
 
-```python
-response = await client.session.call_tool(
-    "prepare_protein_md",
-    arguments={
-        "protein_pdb": "protein_protein_complex_fixed.pdb",
-        "full_md": True,
-        "md_time": 100000.0,
-        "temperature": 300.0,
-        "nvt_time": 100.0,
-        "npt_time": 100.0,
-    },
-)
-result = client.parse_result(response)
-workspace = result.get("run_dir")
-```
+Invoke `mcp__DrugSDA-Tool__prepare_protein_md` with the arguments documented above; use the result fields `run_dir`.
 
 #### Example parameter sets
 

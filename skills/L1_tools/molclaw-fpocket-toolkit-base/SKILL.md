@@ -40,20 +40,7 @@ Return:
 
 How to use tool *fpocket_toolkit* :
 
-```python
-response = await client.session.call_tool(
-    "fpocket_toolkit",
-    arguments={
-        "pdb_file": "/path/to/input.pdb",
-        "top_n": 0,
-        "min_druggability": None,
-        "verbose": False,
-    }
-)
-result = client.parse_result(response)
-pockets = result.get("pockets")
-
-```
+Invoke `mcp__DrugSDA-Tool__fpocket_toolkit` with the arguments documented above; use the result fields `pockets`.
 
 #### Example parameter sets
 

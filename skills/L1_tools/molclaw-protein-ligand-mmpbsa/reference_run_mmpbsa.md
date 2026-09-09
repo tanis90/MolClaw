@@ -34,19 +34,7 @@ Returns:
 
 ### 2. How to use tool `run_mmpbsa`
 
-```python
-response = await client.session.call_tool(
-    "run_mmpbsa",
-    arguments={
-        "work_dir": "complex_workspace",
-        "method": "both",
-        "nproc": 32,
-        "generate_input": True,
-        "interval": 1,
-    },
-)
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__run_mmpbsa` with the arguments documented above.
 
 #### Example parameter sets
 1. **GB+PB default run**

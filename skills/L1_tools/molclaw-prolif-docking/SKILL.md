@@ -58,22 +58,7 @@ Return:
 
 ### How To Use `prolif_docking`
 
-```python
-response = await client.session.call_tool(
-    "prolif_docking",
-    arguments={
-        "protein_path": "relative/path/to/receptor.pdb",
-        "ligand_paths": [
-            "relative/path/to/pose1.sdf",
-            "relative/path/to/pose2.sdf"
-        ],
-        "ligand_format": "sdf",
-        "interactions": ["Hydrophobic", "HBDonor"]
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__prolif_docking` with the arguments documented above; use the result fields `output_file`.
 
 ### Example Parameter Sets
 

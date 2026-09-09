@@ -48,24 +48,7 @@ Return:
 
 How to use tool *pack_sidechains* :
 
-```python
-response = await client.session.call_tool(
-    "pack_sidechains",
-    arguments={
-        "input_pdb": "/path/to/input.pdb",
-        "device": "cuda:0",
-        "chunk_size": 500,
-        "no_post_process": False,
-        "max_optim_iters": 250,
-        "steric_wt": 1.0,
-        "optim_repeats": 2,
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-output_pdb = result["output_pdb"]
-
-```
+Invoke `mcp__DrugSDA-Tool__pack_sidechains` with the arguments documented above; use the result fields `output_pdb`.
 
 #### Example parameter sets
 

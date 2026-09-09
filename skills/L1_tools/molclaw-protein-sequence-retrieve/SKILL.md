@@ -28,17 +28,7 @@ Return:
 
 How to use tool *retrieve_protein_sequence* :
 
-```python
-response = await client.session.call_tool(
-    "retrieve_protein_sequence",
-    arguments={
-        "identifier": identifier,
-        "organism": organism
-    }
-)
-result = client.parse_result(response)
-prot_sequence_info = result["seq_info"]
-```
+Invoke `mcp__DrugSDA-Tool__retrieve_protein_sequence` with the arguments documented above; use the result fields `seq_info`.
 
 An example of output sequence information:
 

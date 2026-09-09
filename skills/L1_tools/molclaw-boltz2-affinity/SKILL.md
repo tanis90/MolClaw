@@ -35,17 +35,6 @@ Return:
 
 Tool usage:
 
-```python
-response = await client.session.call_tool(
-    "pred_binding_affinity_boltz2",
-    arguments={
-        "protein": protein_chains,
-        "smiles": smiles
-    }
-)
-result = client.parse_result(response)
-affinity_probability_binary = result["affinity_probability_binary"]
-affinity_pred_value = result["affinity_pred_value"]
-```
+Invoke `mcp__DrugSDA-Tool__pred_binding_affinity_boltz2` with the arguments documented above; use the result fields `affinity_probability_binary`, `affinity_pred_value`.
 
 Current capability boundary: Boltz affinity rejects ligands with more than 128 atoms. For peptide ligands such as PTHrP/TIP39 fragments, this is expected behavior; use protein-peptide structure/docking workflows such as Chai-1/HDOCK plus `interaction_visualizer(mode="peptide")` instead of interpreting the Boltz rejection as a server failure.

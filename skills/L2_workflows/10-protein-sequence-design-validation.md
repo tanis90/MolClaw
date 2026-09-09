@@ -105,14 +105,7 @@ Partition ALL residues into three classes:
 
 For energy-based evidence complementing the distance-based classification above, run FoldX AlaScan in complex mode on the wild-type structure:
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "alascan",
-    "pdb_path": foldx_repaired_complex_path,
-    "chains": "A,B"   # set to actual interface chain definition
-})
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above.
 
 Parse the output `{stem}_AS.fxout` and classify residues by ΔΔG(Ala):
 - ΔΔG(Ala) > 1.0 kcal/mol → **Fixed** (interface hotspot — critical for binding)
@@ -169,19 +162,7 @@ Use FoldX to predict the energetic effect of specific mutations or to discover b
 
 Before any FoldX energy calculation, the structure must be repaired with FoldX's own RepairPDB:
 
-```python
-# Step B1a: standard pdbfixer repair (if not already done in Skill 1)
-# Step B1b: FoldX-specific repair (MANDATORY for all FoldX modes)
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "repairpdb",
-    "pdb_path": prepared_pdb_path
-})
-repair_result = client.parse_result(response)
-# Download repaired PDB (Category A)
-foldx_repaired_pdb = repair_result["output_dir"] + "/" + [
-    k for k in repair_result["key_files"] if k.endswith("_Repair.pdb")
-][0]
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `output_dir`, `key_files`.
 
 **Download the FoldX-repaired PDB via `server_file_to_base64` — Category A output.** This file is the ONLY acceptable input for subsequent FoldX modes.
 
@@ -195,17 +176,7 @@ When the user provides specific mutations to evaluate:
 2. Base64-encode the mutant file and upload it with the deployed `base64_to_server_file` tool; use the returned server path as `mutant_file`.
 3. Call FoldX BuildModel:
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "buildmodel",
-    "pdb_path": foldx_repaired_pdb,
-    "mutant_file": mutant_file_server_path,
-    "number_of_runs": 5
-})
-result = client.parse_result(response)
-mean_ddg = result["metrics"]["mean_ddg"]
-ddg_values = result["metrics"]["ddg_values"]
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `metrics`, `mean_ddg`, `ddg_values`.
 
 4. Interpret: ΔΔG < −0.5 kcal/mol = stabilizing candidate. ΔΔG > 1.0 = destabilizing. |ΔΔG| < 0.5 = within noise.
 
@@ -217,14 +188,7 @@ When the user wants to find which mutations are beneficial at specific sites:
 2. Construct positions string: e.g. `"RA32a,KA45a"` (scan all 20 AAs at each position). **Use PDB numbering.**
 3. Call FoldX PositionScan:
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "positionscan",
-    "pdb_path": foldx_repaired_pdb,
-    "positions": "RA32a,KA45a"
-})
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above.
 
 4. Parse `PS_{stem}_scanning_output.txt` from output_dir: for each position, rank substitutions by ΔΔG. Select ΔΔG < −0.5 as candidates.
 
@@ -254,13 +218,7 @@ For each candidate sequence, predict its structure with `pred_protein_structure_
 ### Mandatory Structure Download (L3 Principle 14 — CRITICAL)
 
 **Download the predicted structure for EVERY designed candidate:**
-```python
-response = await client.session.call_tool(
-    "server_file_to_base64",
-    arguments={"file_path": esmfold_result["output_structure"]}
-)
-# Save as roundNN_candidate_MM_esmfold.pdb
-```
+Invoke `mcp__DrugSDA-Tool__server_file_to_base64` with the arguments documented above; use the result fields `output_structure`.
 
 **pLDDT assessment** via `calculate_pdb_quality_metrics`:
 - \> 85: excellent

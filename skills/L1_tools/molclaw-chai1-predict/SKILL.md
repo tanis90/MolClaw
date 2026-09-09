@@ -38,21 +38,7 @@ Return:
 
 How to use tool *chai1_predict* :
 
-```python
-response = await client.session.call_tool(
-    "chai1_predict",
-    arguments={
-        "mode": "sequence",
-        "seq": "MKFLILLFNILCLFPVLAADNHGVS",
-        "name": "my_protein",
-        "samples": 5,
-        "dry_run": True
-    }
-)
-result = client.parse_result(response)
-best_model = result["best_model"]
-
-```
+Invoke `mcp__DrugSDA-Tool__chai1_predict` with the arguments documented above; use the result fields `best_model`.
 
 #### Example parameter sets
 

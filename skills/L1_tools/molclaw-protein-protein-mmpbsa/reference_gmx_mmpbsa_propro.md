@@ -37,19 +37,7 @@ Return:
 
 ### 2. How to use tool `gmx_mmpbsa_propro`
 
-```python
-response = await client.session.call_tool(
-    "gmx_mmpbsa_propro",
-    arguments={
-        "work_dir": "Protein_MD_01",
-        "method": "gb",
-        "nproc": 32,
-        "skip_mmpbsa": False,
-        "dry_run": False,
-    },
-)
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__gmx_mmpbsa_propro` with the arguments documented above.
 
 #### Example parameter sets
 

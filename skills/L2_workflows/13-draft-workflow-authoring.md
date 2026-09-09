@@ -273,7 +273,7 @@ Copy the reference L2's phase structure (from Phase 1.3), then populate each pha
 **Objective:** [one-sentence objective]
 
 **Tool calls:**
-- `call_tool("[scp_tool_name]", arguments={[params from Phase 2.1]})`
+- `mcp__DrugSDA-Tool__[scp_tool_name]` with the arguments from Phase 2.1
 - Expected output: [description]
 - Output file: `step[NN]_[description].[ext]`
 

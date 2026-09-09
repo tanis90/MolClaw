@@ -31,18 +31,7 @@ Return:
 
 How to use tool *retrieve_protein_structure_by_gene_name* :
 
-```python
-response = await client.session.call_tool(
-    "retrieve_protein_structure_by_gene_name",
-    arguments={
-        "gene_name": gene_name,
-        "organism": "9606",
-        "sort_by": "length"
-    }
-)
-result = client.parse_result(response)
-prot_structure_path = result["prot_structure_path"]
-```
+Invoke `mcp__DrugSDA-Tool__retrieve_protein_structure_by_gene_name` with the arguments documented above; use the result fields `prot_structure_path`.
 
 **Scene 2**: If the **UniProt ID** is provided, please use tool *retrieve_protein_structure_by_uniprot_id*.
 
@@ -61,17 +50,7 @@ Return:
 
 How to use tool *retrieve_protein_structure_by_uniprot_id* :
 
-```python
-response = await client.session.call_tool(
-    "retrieve_protein_structure_by_uniprot_id",
-    arguments={
-        "uniprot_id": uniprot_id,
-        "sort_by": "length"
-    }
-)
-result = client.parse_result(response)
-prot_structure_path = result["prot_structure_path"]
-```
+Invoke `mcp__DrugSDA-Tool__retrieve_protein_structure_by_uniprot_id` with the arguments documented above; use the result fields `prot_structure_path`.
 
 **Scene 3**: If the **PDB ID** is provided, please use tool *retrieve_protein_structure_by_pdb_id*.
 
@@ -89,13 +68,4 @@ Return:
 
 How to use tool *retrieve_protein_structure_by_pdb_id* :
 
-```python
-response = await client.session.call_tool(
-    "retrieve_protein_structure_by_pdb_id",
-    arguments={
-        "pdb_id": pdb_id
-    }
-)
-result = client.parse_result(response)
-prot_structure_path = result["prot_structure_path"]
-```
+Invoke `mcp__DrugSDA-Tool__retrieve_protein_structure_by_pdb_id` with the arguments documented above; use the result fields `prot_structure_path`.

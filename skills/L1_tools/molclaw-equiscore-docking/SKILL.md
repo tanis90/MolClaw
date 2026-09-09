@@ -18,32 +18,11 @@ step 1. Retrieve target protein structure (skip if user already provides PDB).
 
 step 2. Optional chain extraction (only if specific chains are required).
 
-```python
-response = await client.session.call_tool(
-    "extract_and_save_chains",
-    arguments={"pdb_file_path": pdb_path, "chain_ids": chain_ids}
-)
-result = client.parse_result(response)
-pdb_path = result["out_file"]
-```
+Invoke `mcp__DrugSDA-Tool__extract_and_save_chains` with the arguments documented above; use the result fields `out_file`.
 
 step 3. Fix receptor structure with PDBFixer.
 
-```python
-response = await client.session.call_tool(
-    "fix_pdb",
-    arguments={
-        "input_path": pdb_path,
-        "add_hydrogens": True,
-        "ph": 7.0,
-        "remove_heterogens": True,
-        "remove_water": True,
-        "replace_nonstandard": True
-    }
-)
-result = client.parse_result(response)
-fixed_pdb_path = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__fix_pdb` with the arguments documented above; use the result fields `output_file`.
 
 ## 2. EquiScore-based Ranking Flow
 
@@ -52,20 +31,7 @@ step 4. Drug-likeness filtering.
 - Always compute from returned `result["metrics"]`; do not use manually copied values.
 - Assert `len(metrics) == len(candidate_smiles_list)` before filtering.
 
-```python
-response = await client.session.call_tool(
-    "calculate_mol_drug_chemistry",
-    arguments={"smiles_list": candidate_smiles_list}
-)
-result = client.parse_result(response)
-
-metrics = result["metrics"]
-
-filtered_smiles = [
-    m["smiles"] for m in metrics
-    if m["qed"] >= 0.2 and m["lipinski_rule_of_5_violations"] <= 2
-]
-```
+Invoke `mcp__DrugSDA-Tool__calculate_mol_drug_chemistry` with the arguments documented above; use the result fields `metrics`, `smiles`, `qed`, `lipinski_rule_of_5_violations`.
 
 step 5. Build EquiScore docking input.
 
@@ -84,43 +50,14 @@ step 6. Run EquiScore pocket extraction first.
 - Use `molclaw-equiscore-tool` -> `equiscore_pocket`.
 - Before first call, verify tool argument names from schema (`list_tools` + `inputSchema`) if uncertain.
 
-```python
-response = await client.session.call_tool(
-    "equiscore_pocket",
-    arguments={
-        "docking_result": docking_result_sdf_path,
-        "receptor_pdb": fixed_pdb_path,
-        "pocket_cutoff": None,
-        "dry_run": False
-    }
-)
-pocket_res = client.parse_result(response)
-pocket_dir = pocket_res["pocket_dir"]
-```
+Invoke `mcp__DrugSDA-Tool__equiscore_pocket` with the arguments documented above; use the result fields `pocket_dir`.
 
 If `split_sdf_count == 0` or `pocket_item_count == 0`, fix docking input first and rerun this step.
 
 step 7. Run EquiScore screening.
 - Use `molclaw-equiscore-tool` -> `equiscore_screen`.
 
-```python
-response = await client.session.call_tool(
-    "equiscore_screen",
-    arguments={
-        "pocket_dir": pocket_dir,
-        "ngpu": 1,
-        "batch_size": 128,
-        "num_workers": 8,
-        "multi_pose": False,
-        "pose_num": 1,
-        "debug": False,
-        "dry_run": False
-    }
-)
-screen_res = client.parse_result(response)
-predictions_path = screen_res["predictions_path"]
-score_field = screen_res.get("score_field")
-```
+Invoke `mcp__DrugSDA-Tool__equiscore_screen` with the arguments documented above; use the result fields `predictions_path`, `score_field`.
 
 step 8. Rank and return.
 - Prefer direct CSV read from `predictions_path`.

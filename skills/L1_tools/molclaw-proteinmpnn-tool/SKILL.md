@@ -55,20 +55,7 @@ Return:
 
 How to use tool *proteinmpnn_tool* :
 
-```python
-response = await client.session.call_tool(
-    "proteinmpnn_tool",
-    arguments={
-        "pdb_input": "/path/to/input.pdb",
-        "num_seq": 8,
-        "sampling_temp": "0.1",
-        "dry_run": True
-    }
-)
-result = client.parse_result(response)
-key_output = result["results_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__proteinmpnn_tool` with the arguments documented above; use the result fields `results_dir`.
 
 #### Example parameter sets
 

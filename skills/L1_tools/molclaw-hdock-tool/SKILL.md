@@ -56,20 +56,7 @@ Return:
 
 How to use tool *hdock_tool* :
 
-```python
-response = await client.session.call_tool(
-    "hdock_tool",
-    arguments={
-        "receptor": "/path/to/receptor.pdb",
-        "ligand": "/path/to/ligand.pdb",
-        "nmax": 10,
-        "angle": 15
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__hdock_tool` with the arguments documented above; use the result fields `output_dir`.
 
 #### Example parameter sets
 

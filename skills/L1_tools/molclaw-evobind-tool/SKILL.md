@@ -52,26 +52,7 @@ Return:
 
 How to use tool *evobind_tool* :
 
-```python
-response = await client.session.call_tool(
-    "evobind_tool",
-    arguments={
-        "fasta": "relative/path/to/receptor.fasta",
-        "peptide_length": 10,
-        "num_designs": 10,
-        "num_iterations": 100,
-        "max_recycles": 1,
-        "model_name": "model_1",
-        "target_residues": "all",
-        "cyclic": False,
-        "dry_run": False,
-        "skip_env_check": False
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__evobind_tool` with the arguments documented above; use the result fields `output_dir`.
 
 #### Example parameter sets
 

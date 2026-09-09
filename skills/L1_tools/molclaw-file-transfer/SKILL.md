@@ -1,6 +1,6 @@
 ---
 name: molclaw-file-transfer
-description: Implement data transmission between the local computer and the MCP Server using Base64 encoding 
+description: Implement data transmission between the local computer and the MCP server using Base64 encoding
 license: MIT license
 metadata:
     skill-author: PJLab
@@ -8,71 +8,38 @@ metadata:
 
 # File Transfer
 
-Note: 
-- Local files are not directly accessible by the server. Please upload them to the server using `molclaw-file-transfer` before execution. 
+Note:
+- Local files are not directly accessible by the server. Upload them to the server using this skill before execution.
 - For PDB file inputs, it is recommended to preprocess them using `molclaw-pdbfixer` before execution.
-- Please refer to skill `molclaw-scp-server` to complete tool invocation.
+- Tools are native MCP tools (`mcp__DrugSDA-Tool__*`), already available in the tool list.
 
 ### 1. Transfer local file to SCP server
 
-Example code:
+Tools: `mcp__DrugSDA-Tool__base64_to_server_file`
 
-```python
-import base64
+1. Encode the local file with Bash: `base64 -w0 /path/a.txt` (single-line base64 string).
+2. Call `mcp__DrugSDA-Tool__base64_to_server_file` with:
 
-client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
-if not await client.connect():
-    print("connection failed")
-    return
-
-## Convert local file to base64 string
-local_file = "/path/a.txt"		#Input local file path
-with open(local_file, "rb") as f:
-    file_content = f.read()
-    file_base64_string = base64.b64encode(file_content).decode('utf-8')
-
-## Call tool base64_to_server_file to save base64 string as server file
-response = await client.session.call_tool(
-    "base64_to_server_file",
-    arguments={
-        "file_name": "a.txt",
-        "file_base64_string": file_base64_string
-    }
-)
-result = client.parse_result(response)
-save_file = result["save_file"]	#Server file path after transfer	
-
-await client.disconnect() 
+```json
+{
+    "file_name": "a.txt",
+    "file_base64_string": "<base64 output of the local file>"
+}
 ```
+
+3. The result contains `save_file` — the server file path to use in subsequent tools.
 
 ### 2. Transfer SCP server file to local
 
-Example code:
+Tools: `mcp__DrugSDA-Tool__server_file_to_base64`
 
-```python
-import base64
+1. Call `mcp__DrugSDA-Tool__server_file_to_base64` with:
 
-client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
-if not await client.connect():
-    print("connection failed")
-    return
-
-## Call tool server_file_to_base64 to convert server file to base64 string
-response = await client.session.call_tool(
-    "server_file_to_base64",
-    arguments={
-        "file_path": "/path/a.txt" 	#Input server file path
-    }
-)
-result = client.parse_result(response)
-base64_string = result["base64_string"]
-file_name = result["file_name"]
-
-## Convert base64 string to local file
-file_data = base64.b64decode(base64_string)    
-local_file_path = "/path/" + file_name
-with open(local_file_path, "wb") as f:
-    f.write(file_data)
-
-await client.disconnect()
+```json
+{
+    "file_path": "/path/a.txt"
+}
 ```
+
+2. The result contains `base64_string` and `file_name`.
+3. Decode to a local file with Bash: write `base64_string` to a temporary file (or pass it inline for short content) and run `base64 -d tmp.b64 > /path/a.txt`.

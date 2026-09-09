@@ -35,21 +35,7 @@ Returns:
 
 ### 2. How to use tool `fix_pdb`
 
-```python
-response = await client.session.call_tool(
-    "fix_pdb",
-    arguments={
-        "input_path": "protein.pdb",
-        "add_hydrogens": True,
-        "ph": 7.0,
-        "keep_chains": None,
-        "dry_run": False,
-    },
-)
-result = client.parse_result(response)
-fixed_protein = result.get("output_file")
-await client.disconnect()
-```
+Invoke `mcp__DrugSDA-Tool__fix_pdb` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 1. **Main mode (clean receptor for MM/PBSA)**

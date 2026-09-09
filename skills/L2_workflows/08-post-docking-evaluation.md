@@ -142,15 +142,7 @@ For protein-protein or peptide-protein complexes (NOT small-molecule ligands), F
 1. Run FoldX RepairPDB on each candidate complex.
 2. Run FoldX AnalyseComplex:
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "analysecomplex",
-    "pdb_path": foldx_repaired_complex_path,
-    "chains": "A,B"   # MUST match actual chain IDs in PDB
-})
-result = client.parse_result(response)
-interaction_energy = result["metrics"]["interaction_energy"]  # kcal/mol
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `metrics`, `interaction_energy`.
 
 3. Rank candidates by interaction_energy (more negative = stronger interface).
 4. Include FoldX interaction energy as an additional column in Module 3 consensus ranking.

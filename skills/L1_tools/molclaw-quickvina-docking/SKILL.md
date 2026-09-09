@@ -17,35 +17,11 @@ step 1. Use skill **molclaw-protein-structure-retrieve** to get the target prote
 
 step 2. If the user specifies a target chain or several chains, or if the agent autonomously identifies single-chain or multi-chain structures requiring extraction, invoke the tool *extract_and_save_chains* to generate and save the corresponding structure as a new PDB file. Otherwise, skip this step.
 
-```python
-response = await tool_client.session.call_tool(
-    "extract_and_save_chains",
-    arguments={
-        "pdb_file_path": pdb_path,
-        "chain_ids": chain_ids		##Chain IDs (e.g., ["A", "C"]) 		
-    }
-)
-result = tool_client.parse_result(response)
-pdb_path = result["out_file"]
-```
+Invoke `mcp__DrugSDA-Tool__extract_and_save_chains` with the arguments documented above; use the result fields `out_file`.
 
 step 3. Use skill **molclaw-pdbfixer** to repair the protein structure file using the settings as below.  
 
-```python
-response = await client.session.call_tool(
-    "fix_pdb",
-    arguments={
-        "input_path": pdb_path,
-        "add_hydrogens": True,
-        "ph": 7.0,
-        "remove_heterogens": True,
-        "remove_water": True,
-        "replace_nonstandard": True
-    }
-)
-result = client.parse_result(response)
-fixed_pdb_path = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__fix_pdb` with the arguments documented above; use the result fields `output_file`.
 
 step 4. Use skill **molclaw-fpocket** or **molclaw-p2rank** to detect binding sites on the protein structure and return pocket information of the best one. If the pocket center and box size are already known (e.g., from a co-crystal ligand), skip this step and use the known values directly.
 
@@ -74,25 +50,7 @@ Return:
 
 Tool Usage:
 
-```python
-for smiles in smiles_list:
-    response = await client.session.call_tool(
-        "molecule_docking_quickvina_fullprocess",
-        arguments={
-            "pdb_file_path": fixed_pdb_path,
-            "smiles": smiles,
-            "pocket_center_x": best_pocket["center_x"],
-            "pocket_center_y": best_pocket["center_y"],
-            "pocket_center_z": best_pocket["center_z"],
-            "pocket_size_x": max(25.0, best_pocket.get("size_x", 25.0)),
-            "pocket_size_y": max(25.0, best_pocket.get("size_y", 25.0)),
-            "pocket_size_z": max(25.0, best_pocket.get("size_z", 25.0))
-        }
-    )
-    result_data = client.parse_result(response)
-    docking_affinity = result_data['docking_affinity_value']
-    docking_pose_file = result_data['docking_file']
-```
+Invoke `mcp__DrugSDA-Tool__molecule_docking_quickvina_fullprocess` with the arguments documented above; use the result fields `center_x`, `center_y`, `center_z`, `size_x`, `size_y`, `size_z`.
 
 QuickVina outputs a predicted binding affinity in units of kcal/mol. Similar to AutoDock Vina, the scores are negative values, where a more negative value indicates stronger binding. The scoring function comprehensively accounts for steric complementarity (Gaussian attraction plus quadratic repulsion), hydrogen bonding, hydrophobic interactions, and an entropy penalty for rotatable bonds.
 
@@ -113,20 +71,4 @@ In practice, rather than relying on a fixed threshold, it is more common to rank
 
 When docking the SAME molecule against multiple ALREADY PREPARED targets (each with known pocket parameters from baseline establishment), skip steps 1–4 and call `molecule_docking_quickvina_fullprocess` directly for each target, using each target's locked pocket parameters. Do NOT re-run pocket detection per target per round — pocket parameters are locked at baseline (see Skill 5 Docking Parameter Locking).
 
-```python
-# Example: dock one molecule against two prepared targets
-for target in [target1_info, target2_info]:
-    response = await client.session.call_tool(
-        "molecule_docking_quickvina_fullprocess",
-        arguments={
-            "pdb_file_path": target["prepared_pdb"],
-            "smiles": candidate_smiles,
-            "pocket_center_x": target["locked_center_x"],
-            "pocket_center_y": target["locked_center_y"],
-            "pocket_center_z": target["locked_center_z"],
-            "pocket_size_x": target["locked_size_x"],
-            "pocket_size_y": target["locked_size_y"],
-            "pocket_size_z": target["locked_size_z"]
-        }
-    )
-```
+Invoke `mcp__DrugSDA-Tool__molecule_docking_quickvina_fullprocess` with the arguments documented above; use the result fields `prepared_pdb`, `locked_center_x`, `locked_center_y`, `locked_center_z`, `locked_size_x`, `locked_size_y`.

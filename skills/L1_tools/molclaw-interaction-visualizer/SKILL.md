@@ -86,22 +86,7 @@ Note:
 
 ## MCP Invocation
 
-```python
-response = await client.session.call_tool(
-    "interaction_visualizer",
-    arguments={
-        "mode": "ligand",
-        "receptor_path": "/server/path/receptor_fixed.pdb",
-        "ligand_path": "/server/path/docking_pose.pdbqt",
-        "resid_offset": 0,
-        "score": -8.3,
-        "skip_pymol3d": True
-    }
-)
-result = client.parse_result(response)
-output_dir = result["output_dir"]
-key_files = result["key_files"]
-```
+Invoke `mcp__DrugSDA-Tool__interaction_visualizer` with the arguments documented above; use the result fields `output_dir`, `key_files`.
 
 `mode` is required and must be one of `ligand`, `peptide`, or `protein`. Input paths
 must be server-side paths; use `molclaw-file-transfer` for local input files.

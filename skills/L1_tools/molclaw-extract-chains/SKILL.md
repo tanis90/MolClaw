@@ -31,13 +31,4 @@ Return:
 
 Tool usage:
 
-```python
-response = await client.session.call_tool(
-    "extract_pdb_chains",
-    arguments={
-        "pdb_file_path": fixed_pdb_path
-    }
-)
-result = client.parse_result(response)
-protein_chains = result['chains']
-```
+Invoke `mcp__DrugSDA-Tool__extract_pdb_chains` with the arguments documented above.

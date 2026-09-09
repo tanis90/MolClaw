@@ -33,18 +33,4 @@ Return:
 
 How to use tool *linkinvent_linker_sampling_by_warheads* :
 
-```python
-response = await client.session.call_tool(
-    "linkinvent_linker_sampling_by_warheads",
-    arguments={
-        "warheads": warheads,
-        "n": n,
-        "lipinski": True,
-        "filter_preset": filter_type,
-        "min_linker_atoms": min_linker_atoms,
-        "max_linker_atoms": max_linker_atoms
-    }
-)
-result = client.parse_result(response)
-output_smiles_list = result["output_smiles_list"]
-```
+Invoke `mcp__DrugSDA-Tool__linkinvent_linker_sampling_by_warheads` with the arguments documented above; use the result fields `output_smiles_list`.

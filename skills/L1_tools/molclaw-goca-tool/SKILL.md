@@ -47,22 +47,7 @@ Return:
 
 How to use tool *goca_pipeline* :
 
-```python
-response = await client.session.call_tool(
-    "goca_pipeline",
-    arguments={
-        "protein_pdb": "/path/to/input.pdb",
-        "full_md": True,
-        "md_time": 1000.0,
-        "temperature": 45.0,
-        "gpu_ids": None,
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__goca_pipeline` with the arguments documented above; use the result fields `output_dir`.
 
 #### Example parameter sets
 

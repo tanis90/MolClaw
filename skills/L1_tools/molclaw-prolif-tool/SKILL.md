@@ -67,23 +67,7 @@ Return:
 
 How to use tool *prolif_md* :
 
-```python
-response = await client.session.call_tool(
-    "prolif_md",
-    arguments={
-        "topology_path": "relative/path/to/system.prmtop",
-        "trajectory_path": "relative/path/to/md_prod.nc",
-        "ligand_selection": "resname LIG",
-        "protein_selection": "protein",
-        "interactions": ["Hydrophobic", "HBDonor"],
-        "start": 0,
-        "stop": 100,
-        "step": 2
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__prolif_md` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 
@@ -140,22 +124,7 @@ Return:
 
 How to use tool *prolif_docking* :
 
-```python
-response = await client.session.call_tool(
-    "prolif_docking",
-    arguments={
-        "protein_path": "relative/path/to/receptor.pdb",
-        "ligand_paths": [
-            "relative/path/to/pose1.sdf",
-            "relative/path/to/pose2.sdf"
-        ],
-        "ligand_format": "sdf",
-        "interactions": ["Hydrophobic", "HBDonor"]
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__prolif_docking` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 
@@ -210,19 +179,7 @@ Return:
 
 How to use tool *prolif_pdb* :
 
-```python
-response = await client.session.call_tool(
-    "prolif_pdb",
-    arguments={
-        "structure_path": "relative/path/to/complex.pdb",
-        "ligand_selection": "resname LIG",
-        "protein_selection": "protein",
-        "interactions": ["Hydrophobic", "HBAcceptor"]
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__prolif_pdb` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 
@@ -275,21 +232,7 @@ Return:
 
 How to use tool *prolif_protein_protein* :
 
-```python
-response = await client.session.call_tool(
-    "prolif_protein_protein",
-    arguments={
-        "topology_path": "relative/path/to/system.prmtop",
-        "trajectory_path": "relative/path/to/md.nc",
-        "selection_a": "segid A",
-        "selection_b": "segid B",
-        "start": 0,
-        "step": 10
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__prolif_protein_protein` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 

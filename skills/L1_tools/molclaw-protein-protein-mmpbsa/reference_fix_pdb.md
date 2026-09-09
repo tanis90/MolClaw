@@ -37,24 +37,7 @@ Return:
 
 ### 2. How to use tool `fix_pdb`
 
-```python
-response = await client.session.call_tool(
-    "fix_pdb",
-    arguments={
-        "input_path": "protein_protein_complex.pdb",
-        "add_hydrogens": True,
-        "ph": 7.0,
-        "remove_heterogens": False,
-        "remove_water": False,
-        "replace_nonstandard": True,
-        "keep_chains": ["A", "B"],
-        "add_missing_residues": False,
-        "dry_run": False,
-    },
-)
-result = client.parse_result(response)
-fixed_pdb = result.get("output_file")
-```
+Invoke `mcp__DrugSDA-Tool__fix_pdb` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 

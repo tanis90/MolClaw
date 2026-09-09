@@ -130,7 +130,7 @@ Each step must include:
 
 Each phase must include:
 - A clear objective statement
-- Specific tool calls with `call_tool("tool_name", ...)` syntax
+- Specific tool invocations by native tool name (`mcp__DrugSDA-Tool__<tool_name>`)
 - A CHECKPOINT block after each phase with pass/fail conditions
 - COUNT GATE blocks where molecule/structure counts change
 - MAPPING GATE blocks before residue-specific analysis (if applicable)
@@ -272,7 +272,7 @@ metadata:
 
 ### Step 1: [Action Title]
 [Description with SCP tool call]
-- Tool: `call_tool("[scp_tool_name]", arguments={...})`
+- Tool: `mcp__DrugSDA-Tool__[scp_tool_name]` (arguments per its reference block)
 - Expected output: [description]
 - Quality check: [condition to verify before proceeding]
 

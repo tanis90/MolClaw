@@ -88,21 +88,7 @@ This step builds the simulation system, runs energy minimization, equilibration 
 | `md.log` | Simulation log | B — SHOULD download |
 | `md.edr` | Energy data | B — SHOULD download |
 
-```python
-# Download ALL files from MD output directory
-import os, base64
-for filename in os.listdir(output_dir):
-    filepath = os.path.join(output_dir, filename)
-    response = await client.session.call_tool(
-        "server_file_to_base64",
-        arguments={"file_path": filepath}
-    )
-    dl = client.parse_result(response)
-    local_path = f"step{N}_md_{filename}"
-    with open(local_path, "wb") as f:
-        f.write(base64.b64decode(dl["base64_string"]))
-    assert os.path.getsize(local_path) > 0, f"Download failed: {local_path}"
-```
+For every output file, invoke `mcp__DrugSDA-Tool__server_file_to_base64` to fetch its content, then write it locally with Bash `base64 -d` (stepNN-named files).
 
 **⚠ The MD simulation step is NOT considered complete until ALL output files have been downloaded and verified.**
 

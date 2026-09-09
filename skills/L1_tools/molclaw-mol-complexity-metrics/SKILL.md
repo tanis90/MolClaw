@@ -31,13 +31,4 @@ Return:
 
 How to use tool *calculate_mol_complexity*:
 
-```python
-response = await client.session.call_tool(
-    "calculate_mol_complexity",			
-    arguments={
-        "smiles_list": smiles_list
-    }
-)
-result = client.parse_result(response)
-metrics = result["metrics"]
-```
+Invoke `mcp__DrugSDA-Tool__calculate_mol_complexity` with the arguments documented above; use the result fields `metrics`.

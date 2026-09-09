@@ -32,13 +32,4 @@ Return:
 
 How to use tool *pred_pocket_prank* :
 
-```python
-response = await client.session.call_tool(
-    "pred_pocket_prank",
-    arguments={
-        "pdb_file_path": pdb_file_path
-    }
-)
-result = client.parse_result(response)
-pred_pockets = result["pred_pockets"]
-```
+Invoke `mcp__DrugSDA-Tool__pred_pocket_prank` with the arguments documented above; use the result fields `pred_pockets`.

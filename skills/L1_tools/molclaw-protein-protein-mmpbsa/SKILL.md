@@ -102,62 +102,7 @@ Never request users to provide intermediate GROMACS artifacts (`em.gro`, `md.xtc
 
 ## Recommended Sequential Calling
 
-```python
-# Step 1: fix_pdb
-r1 = client.parse_result(await client.session.call_tool(
-    "fix_pdb",
-    arguments={
-        "input_path": "protein_protein_complex.pdb",
-        "add_hydrogens": True,
-        "ph": 7.0,
-        "remove_heterogens": False,
-        "remove_water": False,
-        "replace_nonstandard": False,
-        "add_missing_residues": False,
-        "dry_run": False,
-    },
-))
-fixed_pdb = r1["output_file"]
-
-# Step 2: prepare_protein_md
-r2 = client.parse_result(await client.session.call_tool(
-    "prepare_protein_md",
-    arguments={
-        "protein_pdb": fixed_pdb,
-        "full_md": True,
-        "md_time": 20.0,
-        "temperature": 300.0,
-        "nvt_time": 1.0,
-        "npt_time": 1.0,
-    },
-))
-md_work_dir = r2["run_dir"]
-
-# Validate required files before MM/PBSA
-required_files = ["em.gro", "md.xtc", "md.tpr", "topol.top"]
-# Agents should verify these exist under md_work_dir and return an error if missing
-
-# Step 3: gmx_mmpbsa_propro
-r3 = client.parse_result(await client.session.call_tool(
-    "gmx_mmpbsa_propro",
-    arguments={
-        "work_dir": md_work_dir,
-        "method": "gb",
-        "nproc": 64,
-        "skip_mmpbsa": False,
-        "dry_run": False,
-    },
-))
-
-# Step 4: analyze_mmpbsa (optional)
-if enable_analysis:
-    r4 = client.parse_result(await client.session.call_tool(
-        "analyze_mmpbsa",
-        arguments={
-            "work_dir": r3["output_dir"],
-        },
-    ))
-```
+Invoke `mcp__DrugSDA-Tool__fix_pdb` and then `mcp__DrugSDA-Tool__prepare_protein_md` and then `mcp__DrugSDA-Tool__gmx_mmpbsa_propro` and then `mcp__DrugSDA-Tool__analyze_mmpbsa` with the arguments documented above; use the result fields `output_file`, `run_dir`, `output_dir`.
 
 ## Practical Parameter Sets
 

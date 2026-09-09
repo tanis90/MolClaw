@@ -29,13 +29,4 @@ Return:
 
 How to use tool *retrieve_smiles_by_compoundname* :
 
-```python
-response = await client.session.call_tool(
-    "retrieve_smiles_by_compoundname",
-    arguments={
-        "compound_names": compound_names
-    }
-)
-result = client.parse_result(response)
-retrieve_smiles = result["retrieve_smiles"]
-```
+Invoke `mcp__DrugSDA-Tool__retrieve_smiles_by_compoundname` with the arguments documented above; use the result fields `retrieve_smiles`.

@@ -31,16 +31,4 @@ Return:
 
 How to use tool *libinvent_rgroup_sampling_by_scaffold* :
 
-```python
-response = await client.session.call_tool(
-    "libinvent_rgroup_sampling_by_scaffold",
-    arguments={
-        "scaffold": scaffold,
-        "n": n,
-        "lipinski": True,
-        "filter_preset": filter_type
-    }
-)
-result = client.parse_result(response)
-output_smiles_list = result["output_smiles_list"]
-```
+Invoke `mcp__DrugSDA-Tool__libinvent_rgroup_sampling_by_scaffold` with the arguments documented above; use the result fields `output_smiles_list`.

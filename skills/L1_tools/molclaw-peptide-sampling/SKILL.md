@@ -32,17 +32,4 @@ Return:
 
 How to use tool *pepinvent_peptide_sampling_by_peptide* :
 
-```python
-response = await client.session.call_tool(
-    "pepinvent_peptide_sampling_by_peptide",
-    arguments={
-        "peptide": smiles,
-        "n": n,
-        "filter_preset": filter_type,
-        "mw_min": mw_min,
-        "mw_max": mw_max
-    }
-)
-result = client.parse_result(response)
-output_smiles_list = result["output_smiles_list"]
-```
+Invoke `mcp__DrugSDA-Tool__pepinvent_peptide_sampling_by_peptide` with the arguments documented above; use the result fields `output_smiles_list`.

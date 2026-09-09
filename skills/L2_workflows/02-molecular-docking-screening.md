@@ -217,18 +217,7 @@ Log every retry attempt and its outcome in `run_log.md`. If ALL molecules in a b
 
 **After EACH successful docking, download the docking pose file:**
 
-```python
-# Download docking pose PDBQT for each molecule
-response = await client.session.call_tool(
-    "server_file_to_base64",
-    arguments={"file_path": result["docking_file"]}
-)
-dl = client.parse_result(response)
-local_path = f"step{N}_mol{i:02d}_docking_pose.pdbqt"
-with open(local_path, "wb") as f:
-    f.write(base64.b64decode(dl["base64_string"]))
-# Verify: os.path.getsize(local_path) > 0
-```
+For every output file, invoke `mcp__DrugSDA-Tool__server_file_to_base64` to fetch its content, then write it locally with Bash `base64 -d` (stepNN-named files).
 
 **A docking step is NOT considered complete until the pose file has been downloaded and verified.** These pose files are Category A (user-critical) outputs — they are essential for downstream analysis, user verification, and visualization.
 

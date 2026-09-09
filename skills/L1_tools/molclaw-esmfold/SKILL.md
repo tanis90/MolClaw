@@ -27,13 +27,4 @@ Return:
 
 How to use tool *pred_protein_structure_esmfold* :
 
-```python
-response = await client.session.call_tool(
-    "pred_protein_structure_esmfold",
-    arguments={
-        "sequence": sequence
-    }
-)
-result = client.parse_result(response)
-pred_protein_structure = result["pdb_path"]
-```
+Invoke `mcp__DrugSDA-Tool__pred_protein_structure_esmfold` with the arguments documented above; use the result fields `pdb_path`.

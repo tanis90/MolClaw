@@ -30,13 +30,4 @@ Return:
 
 How to use tool *calculate_mol_drug_chemistry* :
 
-```python
-response = await client.session.call_tool(
-    "calculate_mol_drug_chemistry",
-    arguments={
-        "smiles_list": smiles_list
-    }
-)
-result = client.parse_result(response)
-druglikeness_metrics = result["metrics"]
-```
+Invoke `mcp__DrugSDA-Tool__calculate_mol_drug_chemistry` with the arguments documented above; use the result fields `metrics`.

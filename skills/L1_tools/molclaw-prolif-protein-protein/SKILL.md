@@ -61,21 +61,7 @@ Return:
 
 ### How To Use `prolif_protein_protein`
 
-```python
-response = await client.session.call_tool(
-    "prolif_protein_protein",
-    arguments={
-        "topology_path": "relative/path/to/system.prmtop",
-        "trajectory_path": "relative/path/to/md.nc",
-        "selection_a": "segid A",
-        "selection_b": "segid B",
-        "start": 0,
-        "step": 10
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__prolif_protein_protein` with the arguments documented above; use the result fields `output_file`.
 
 ### Example Parameter Sets
 

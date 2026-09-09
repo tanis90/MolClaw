@@ -68,21 +68,7 @@ Return:
 
 How to use tool *karmadock_tool* :
 
-```python
-response = await client.session.call_tool(
-    "karmadock_tool",
-    arguments={
-        "ligand_smi": "/path/to/ligands.smi",
-        "protein_file": "/path/to/protein.pdb",
-        "crystal_ligand_file": "/path/to/crystal_ligand.mol2",
-        "score_threshold": 70.0,
-        "batch_size": 64
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__karmadock_tool` with the arguments documented above; use the result fields `output_dir`.
 
 #### Example parameter sets
 

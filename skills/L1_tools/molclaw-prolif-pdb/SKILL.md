@@ -54,19 +54,7 @@ Return:
 
 ### How To Use `prolif_pdb`
 
-```python
-response = await client.session.call_tool(
-    "prolif_pdb",
-    arguments={
-        "structure_path": "relative/path/to/complex.pdb",
-        "ligand_selection": "resname LIG",
-        "protein_selection": "protein",
-        "interactions": ["Hydrophobic", "HBAcceptor"]
-    }
-)
-result = client.parse_result(response)
-key_output = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__prolif_pdb` with the arguments documented above; use the result fields `output_file`.
 
 ### Example Parameter Sets
 

@@ -30,14 +30,4 @@ Return:
 
 How to use tool *calculate_dleps_score* :
 
-```python
-response = await client.session.call_tool(
-    "calculate_dleps_score",
-    arguments={
-        "smiles_list": smiles_list,
-        "disease_name": disease_name
-    }
-)
-result = client.parse_result(response)
-pred_scores = result["pred_scores"]
-```
+Invoke `mcp__DrugSDA-Tool__calculate_dleps_score` with the arguments documented above; use the result fields `pred_scores`.

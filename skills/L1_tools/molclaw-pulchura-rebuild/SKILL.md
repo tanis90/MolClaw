@@ -42,23 +42,7 @@ Return:
 
 How to use tool *pulchura_rebuild* :
 
-```python
-response = await client.session.call_tool(
-    "pulchura_rebuild",
-    arguments={
-        "input_pdbs": "/path/to/input.pdb",
-        "mode": "full",
-        "optimize_hbond": False,
-        "detect_cis_pro": False,
-        "verbose": False,
-        "preserve_coords": False,
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-rebuilt_pdb_files = result["rebuilt_pdb_files"]
-
-```
+Invoke `mcp__DrugSDA-Tool__pulchura_rebuild` with the arguments documented above; use the result fields `rebuilt_pdb_files`.
 
 #### Example parameter sets
 

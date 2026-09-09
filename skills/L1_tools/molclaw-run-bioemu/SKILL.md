@@ -44,20 +44,7 @@ Return:
 
 How to use tool *run_bioemu* :
 
-```python
-response = await client.session.call_tool(
-    "run_bioemu",
-    arguments={
-        "sequence": "GYDPETGTWG",
-        "num_samples": 5,
-        "export_pdbs": False,
-        "dry_run": True
-    }
-)
-result = client.parse_result(response)
-key_output = result["run_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__run_bioemu` with the arguments documented above; use the result fields `run_dir`.
 
 #### Example parameter sets
 
@@ -111,24 +98,7 @@ Return:
 
 How to use tool *extract_bioemu_structures* :
 
-```python
-response = await client.session.call_tool(
-    "extract_bioemu_structures",
-    arguments={
-        "input_dir": "/path/to/bioemu_run_dir",
-        "prefix": "conf",
-        "merge_pdb": False,
-        "extract_npz": False,
-        "no_individual_pdbs": False,
-        "no_stats": False,
-        "sidechain_relax": False,
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-key_output = result["individual_pdb_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__extract_bioemu_structures` with the arguments documented above; use the result fields `individual_pdb_dir`.
 
 #### Example parameter sets
 
@@ -164,39 +134,4 @@ Use the two tools in sequence via API calls:
 1. Call *run_bioemu* to produce sampling outputs and get `run_dir`.
 2. Pass that `run_dir` to *extract_bioemu_structures* for per-frame structure extraction.
 
-```python
-client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
-if not await client.connect():
-    print("connection failed")
-    return
-
-run_resp = await client.session.call_tool(
-    "run_bioemu",
-    arguments={
-        "sequence": "GYDPETGTWG",
-        "num_samples": 5,
-        "export_pdbs": False,
-        "dry_run": False
-    }
-)
-run_result = client.parse_result(run_resp)
-bioemu_run_dir = run_result["run_dir"]
-
-extract_resp = await client.session.call_tool(
-    "extract_bioemu_structures",
-    arguments={
-        "input_dir": bioemu_run_dir,
-        "prefix": "conf",
-        "merge_pdb": False,
-        "extract_npz": False,
-        "no_individual_pdbs": False,
-        "no_stats": False,
-        "sidechain_relax": False,
-        "dry_run": False
-    }
-)
-extract_result = client.parse_result(extract_resp)
-key_output = extract_result["files"]
-
-await client.disconnect() 
-```
+Invoke `mcp__DrugSDA-Tool__run_bioemu` and then `mcp__DrugSDA-Tool__extract_bioemu_structures` with the arguments documented above; use the result fields `run_dir`, `files`.

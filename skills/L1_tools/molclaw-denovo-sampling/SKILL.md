@@ -30,15 +30,4 @@ Return:
 
 How to use tool *reinvent_denovo_sampling* :
 
-```python
-response = await client.session.call_tool(
-    "reinvent_denovo_sampling",
-    arguments={
-        "n": n,
-        "lipinski": True,
-        "filter_preset": filter_type
-    }
-)
-result = client.parse_result(response)
-output_smiles_list = result["output_smiles_list"]
-```
+Invoke `mcp__DrugSDA-Tool__reinvent_denovo_sampling` with the arguments documented above; use the result fields `output_smiles_list`.

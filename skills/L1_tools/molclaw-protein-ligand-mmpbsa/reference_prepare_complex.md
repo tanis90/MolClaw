@@ -32,23 +32,7 @@ Returns:
 
 ### 2. How to use tool `prepare_complex`
 
-```python
-response = await client.session.call_tool(
-    "prepare_complex",
-    arguments={
-        "protein": "fixed_protein.pdb",
-        "ligand": "ligand.sdf",
-        "pose": 1,
-        "gpu_ids": "0",
-        "full_md": True,
-        "nvt_time": 1.0,
-        "npt_time": 1.0,
-        "md_time": 100.0,
-    },
-)
-result = client.parse_result(response)
-complex_dir = result.get("output_dir")
-```
+Invoke `mcp__DrugSDA-Tool__prepare_complex` with the arguments documented above; use the result fields `output_dir`.
 
 #### Example parameter sets
 1. **Full MD workspace (mirrors gmxMMPBSA scripts default)**

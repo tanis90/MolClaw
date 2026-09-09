@@ -155,16 +155,7 @@ The repaired PDB is a Category A output — it is the foundation for ALL downstr
 
 If the downstream workflow involves FoldX analysis (Stability, BuildModel, AlaScan, PositionScan, PSSM, AnalyseComplex, or SequenceDetail — see L1 skill `molclaw-foldx-tool`), an additional FoldX-specific repair step is **MANDATORY** after the standard pdbfixer repair:
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "repairpdb",
-    "pdb_path": pdbfixer_output_path
-})
-foldx_repair = client.parse_result(response)
-foldx_repaired_pdb = foldx_repair["output_dir"] + "/" + [
-    k for k in foldx_repair["key_files"] if k.endswith("_Repair.pdb")
-][0]
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `output_dir`, `key_files`.
 
 Download the FoldX-repaired PDB via `server_file_to_base64` — Category A output. This optimizes side-chain rotamers against FoldX's energy function. The `*_Repair.pdb` output is the ONLY acceptable input for subsequent FoldX modes.
 

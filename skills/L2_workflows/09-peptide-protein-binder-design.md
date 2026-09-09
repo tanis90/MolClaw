@@ -133,13 +133,7 @@ samples=5
 ### Mandatory Chai-1 Structure Download (L3 Principle 14 — CRITICAL)
 
 **Download the predicted complex structure** from Chai-1 output:
-```python
-response = await client.session.call_tool(
-    "server_file_to_base64",
-    arguments={"file_path": chai1_result["output_structure"]}
-)
-# Save as stepNN_chai1_complex.pdb/cif
-```
+Invoke `mcp__DrugSDA-Tool__server_file_to_base64` with the arguments documented above; use the result fields `output_structure`.
 **This is a Category A file — essential for downstream interaction analysis, user verification, and visualization.**
 
 ### Validation Layer 2: HDOCK Docking Verification
@@ -151,15 +145,7 @@ If both target 3D structure and binder/peptide monomer structure are available:
 ### Mandatory HDOCK Structure Download (L3 Principle 14)
 
 **Download the HDOCK docked complex PDB:**
-```python
-hdock_complex = hdock_result["output_files"]["best_model_pdb"]
-hdock_partner_chain = hdock_result["partner_chains"][0]
-response = await client.session.call_tool(
-    "server_file_to_base64",
-    arguments={"file_path": hdock_complex}
-)
-# Save as stepNN_hdock_complex.pdb
-```
+Invoke `mcp__DrugSDA-Tool__server_file_to_base64` with the arguments documented above; use the result fields `output_files`, `best_model_pdb`, `partner_chains`.
 
 ### Validation Layer 3: Interface Interaction Analysis (interaction-visualizer — PRIMARY)
 
@@ -198,15 +184,7 @@ For quantitative energy assessment of the designed peptide–target interface:
 1. Run FoldX RepairPDB on the Chai-1 predicted complex.
 2. Run FoldX AnalyseComplex:
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "analysecomplex",
-    "pdb_path": foldx_repaired_chai1_complex,
-    "chains": "A,B"   # target_chain, peptide_chain — check actual IDs
-})
-result = client.parse_result(response)
-interaction_energy = result["metrics"]["interaction_energy"]
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `metrics`, `interaction_energy`.
 
 Interpretation: interaction_energy < −5 kcal/mol suggests a stable interface. Compare across candidates for ranking. This provides physics-based evidence independent of Chai-1 ipTM.
 

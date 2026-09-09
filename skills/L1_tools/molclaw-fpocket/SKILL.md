@@ -36,17 +36,7 @@ Return:
 
 How to use tool *fpocket_toolkit* :
 
-```python
-response = await client.session.call_tool(
-    "fpocket_toolkit",
-    arguments={
-        "pdb_file": pdb_file,
-        "top_n": top_n
-    }
-)
-result = client.parse_result(response)
-pred_pockets = result["pockets"]
-```
+Invoke `mcp__DrugSDA-Tool__fpocket_toolkit` with the arguments documented above; use the result fields `pockets`.
 
 Here is an example of a pocket from *pred_pockets*:
 

@@ -108,14 +108,7 @@ Return:
 
 Optimizes side-chain rotamers and removes bad contacts against the FoldX energy function.
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "repairpdb",
-    "pdb_path": prepared_pdb_path
-})
-result = client.parse_result(response)
-repaired_pdb = result["output_dir"] + "/" + [k for k in result["key_files"] if k.endswith("_Repair.pdb")][0]
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `output_dir`, `key_files`.
 
 Key outputs: `{stem}_Repair.pdb` (repaired structure), `{stem}_Repair.fxout` (energy log).
 
@@ -123,14 +116,7 @@ Key outputs: `{stem}_Repair.pdb` (repaired structure), `{stem}_Repair.fxout` (en
 
 Computes total free energy of the protein structure. Lower (more negative) ΔG = more stable.
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "stability",
-    "pdb_path": foldx_repaired_pdb_path
-})
-result = client.parse_result(response)
-total_energy = result["metrics"]["total_energy"]  # ΔG in kcal/mol
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `metrics`, `total_energy`.
 
 Key outputs: `{stem}_0_ST.fxout`. Key metric: `metrics.total_energy`.
 
@@ -157,17 +143,7 @@ Common format errors:
 
 **Residue numbering (L3 Principle 17):** Use the PDB file's numbering, not UniProt or literature numbering. Translate before writing the mutant file.
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "buildmodel",
-    "pdb_path": foldx_repaired_pdb_path,
-    "mutant_file": "/path/to/mutations.txt",
-    "number_of_runs": 5
-})
-result = client.parse_result(response)
-mean_ddg = result["metrics"]["mean_ddg"]       # average ΔΔG in kcal/mol
-ddg_values = result["metrics"]["ddg_values"]   # per-mutation ΔΔG list
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `metrics`, `mean_ddg`, `ddg_values`.
 
 Key outputs: `Dif_{stem}.fxout` (core ΔΔG), `Average_{stem}.fxout`, `Raw_{stem}.fxout`. Key metrics: `metrics.mean_ddg`, `metrics.ddg_values`.
 
@@ -182,15 +158,7 @@ Computes interaction energy between two sides of a protein complex.
 - Receptor A vs ligand B → `chains="A,B"`
 - Trimer AB vs C → `chains="AB,C"`
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "analysecomplex",
-    "pdb_path": foldx_repaired_complex_path,
-    "chains": "A,B"   # MUST match actual PDB chain IDs
-})
-result = client.parse_result(response)
-interaction_energy = result["metrics"]["interaction_energy"]  # kcal/mol
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `metrics`, `interaction_energy`.
 
 Key outputs: `Interaction_{stem}_AC.fxout`, `Interface_Residues_{stem}_AC.fxout`, `Summary_{stem}_AC.fxout`, `Indiv_energies_{stem}_AC.fxout`. Key metric: `metrics.interaction_energy`.
 
@@ -200,24 +168,11 @@ Mutates each residue to alanine and computes ΔΔG. Two sub-modes:
 
 **Monomer mode (no chains):** Computes effect on protein folding stability only.
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "alascan",
-    "pdb_path": foldx_repaired_pdb_path
-})
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above.
 
 **Complex mode (with chains):** Computes effect on interface interaction energy. **This is the correct mode for interface hotspot identification.**
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "alascan",
-    "pdb_path": foldx_repaired_complex_path,
-    "chains": "A,B"   # MUST match actual PDB chain IDs
-})
-result = client.parse_result(response)
-hotspot_count = result["metrics"]["hotspot_count"]  # residues with ΔΔG > 1.0
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above; use the result fields `metrics`, `hotspot_count`.
 
 Key output: `{stem}_AS.fxout`. Key metric: `metrics.hotspot_count`.
 
@@ -242,14 +197,7 @@ Common format errors:
 
 **Residue numbering (L3 Principle 17):** positions use the PDB file's numbering. Translate from task numbering before calling.
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "positionscan",
-    "pdb_path": foldx_repaired_pdb_path,
-    "positions": "RA32a,KA45a"
-})
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above.
 
 Key output: `PS_{stem}_scanning_output.txt`.
 
@@ -257,15 +205,7 @@ Key output: `PS_{stem}_scanning_output.txt`.
 
 Combines position scanning with complex analysis. For each position, evaluates all 20 substitutions considering BOTH protein stability AND interface binding energy. **Requires both `chains` and `positions`.**
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "pssm",
-    "pdb_path": foldx_repaired_complex_path,
-    "chains": "A,B",
-    "positions": "RA32a,KA45a"
-})
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above.
 
 Key outputs: `PSSM_{stem}.txt` (scoring matrix), `PSSM_Clash_{stem}.txt` (steric clashes).
 
@@ -273,13 +213,7 @@ Key outputs: `PSSM_{stem}.txt` (scoring matrix), `PSSM_Clash_{stem}.txt` (steric
 
 Reports energy contribution of each residue broken down by van der Waals, hydrogen bonds, solvation, electrostatics, etc.
 
-```python
-response = await client.session.call_tool("foldx_tool", arguments={
-    "mode": "sequencedetail",
-    "pdb_path": foldx_repaired_pdb_path
-})
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__foldx_tool` with the arguments documented above.
 
 Key output: `SD_{stem}.fxout`.
 

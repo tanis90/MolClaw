@@ -30,15 +30,7 @@ Returns:
 
 ### 2. How to use tool `analyze_mmpbsa`
 
-```python
-response = await client.session.call_tool(
-    "analyze_mmpbsa",
-    arguments={
-        "work_dir": "complex_workspace",
-    },
-)
-result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__analyze_mmpbsa` with the arguments documented above.
 
 #### Example parameter sets
 1. **Default report generation**

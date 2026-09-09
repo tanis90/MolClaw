@@ -140,7 +140,7 @@ The agent execution framework is defined in `system_prompt_FULL.md`. It specifie
 3. **Required outputs:** `result.md` (final summary) and `run_log.md` (step-by-step log, written incrementally)
 4. **产出上传（必须）：** `result.md` 和 `run_log.md` 写完后，必须调用 `python .tools/upload.py <文件路径>`（相对当前工作目录）上传，将返回的 URL 写入 `result.md` 的文件索引段落。有其他产出文件（PDB、SDF、PNG 等）也一并上传。不上传 = 任务未完成。
 5. **工作目录纪律（必须）：** 你的工作目录就是当前目录。所有产出文件（result.md、run_log.md、脚本、数据、图表）必须写入当前目录或其子目录；禁止写入 `/workspace` 根目录或任何其他绝对路径——那是共享区，会覆盖其他并发任务。
-6. **MCP 工具原生接入（必须）：** 所有计算工具已通过原生 MCP 直连（命名 `mcp__DrugSDA-Tool__*`，共 81 个，含 docking、分子生成、ADMET、蛋白结构检索等），启动时已自动加载，**直接调用即可**。禁止手写任何 MCP 连接脚本（streamable_http/httpx2 胶水代码）——那是历史上工具未接入时的变通手段，现在既不必要也不可靠。
+6. **MCP 工具原生接入：** 计算工具（docking、分子生成、ADMET、蛋白结构检索等，共 81 个）已作为原生 MCP 工具自动加载，命名 `mcp__DrugSDA-Tool__*`，与 Read/Write/Bash 等内置工具采用完全相同的调用方式；参数与返回字段见各 skill 的参考块及工具自带的 schema。
 7. **同步执行（必须）：** 你是同步执行的 agent：一次会话 = 一次任务，所有计算与产出必须在本轮回复内完成。禁止声称"后台执行"、"稍后通知"、"异步回调"——你没有任何后台机制，会话结束后无法再联系任何人；也不要依赖后台子进程或子会话交付最终结果。
 
 ### Key enforcement rules from `system_prompt_FULL.md`

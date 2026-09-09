@@ -264,25 +264,7 @@ Every molecular structure file generated during execution — whether it is an i
 
 **Implementation protocol — execute after EVERY tool call that returns a structure file path:**
 
-```python
-# Standard download pattern for ANY structure file
-import base64
-
-server_path = result["output_file"]  # or "complex_cif_file", "docking_res_file", etc.
-response = await client.session.call_tool(
-    "server_file_to_base64",
-    arguments={"file_path": server_path}
-)
-dl = client.parse_result(response)
-
-local_filename = "stepNN_descriptive_name.ext"  # Use step-numbered naming
-with open(local_filename, "wb") as f:
-    f.write(base64.b64decode(dl["base64_string"]))
-
-# VERIFY the download succeeded
-import os
-assert os.path.getsize(local_filename) > 0, f"Download failed: {local_filename} is empty"
-```
+For every output file, invoke `mcp__DrugSDA-Tool__server_file_to_base64` to fetch its content, then write it locally with Bash `base64 -d` (stepNN-named files).
 
 **A tool call is NOT considered complete until its structure output files have been successfully downloaded and verified.** Do not proceed to the next pipeline step with undownloaded structure files.
 
@@ -387,28 +369,7 @@ The deployed `residue_mapper` tool automates the mapping protocol. It supports a
 
 Typical invocations the agent should use:
 
-```python
-# After obtaining an RCSB PDB — allow DBREF mapping, then alignment fallback.
-response = await client.session.call_tool("residue_mapper", arguments={
-    "pdb_path": "1M17_fixed.pdb",
-    "uniprot_id": "P00533",
-    "chain": "A",
-    "query": "Met793,Thr790,Leu718,Val726,Ala743,Leu844",
-    "output_format": "csv"
-})
-
-# After Boltz-2 / ESMFold prediction — arithmetic from the known sequence start.
-response = await client.session.call_tool("residue_mapper", arguments={
-    "pdb_path": "boltz2_complex.pdb",
-    "uniprot_id": "P00533",
-    "chain": "A",
-    "predicted": True,
-    "input_seq_start": 718,
-    "query": "tool:76,tool:73,tool:26",
-    "output_format": "csv"
-})
-mapping_result = client.parse_result(response)
-```
+Invoke `mcp__DrugSDA-Tool__residue_mapper` with the arguments documented above.
 
 The result returns `output_dir` and a relative `mapping_file`, together with mapping counts and optional `query_results`. Save the mapping artifact with the run and reference it whenever interpreting residue-specific analysis results.
 

@@ -46,24 +46,7 @@ Return:
 
 How to use tool *protein_openmm_md* :
 
-```python
-response = await client.session.call_tool(
-    "protein_openmm_md",
-    arguments={
-        "protein_pdb": "/path/to/input.pdb",
-        "solvent_type": "implicit",
-        "gb_model": "OBC2",
-        "water_model": "tip3p",
-        "force_field": "amber14",
-        "md_time": 1000.0,
-        "platform": "CUDA",
-        "full_md": True
-    }
-)
-result = client.parse_result(response)
-key_output = result["work_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__protein_openmm_md` with the arguments documented above; use the result fields `work_dir`.
 
 #### Example parameter sets
 
@@ -118,22 +101,7 @@ Return:
 
 How to use tool *openmm_extract_frames* :
 
-```python
-response = await client.session.call_tool(
-    "openmm_extract_frames",
-    arguments={
-        "work_dir": "/path/to/work_dir",
-        "num_frames": 100,
-        "protein_only": False,
-        "align": False,
-        "prefix": "frame",
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-key_output = result["frame_files"]
-
-```
+Invoke `mcp__DrugSDA-Tool__openmm_extract_frames` with the arguments documented above; use the result fields `frame_files`.
 
 #### Example parameter sets
 
@@ -164,35 +132,4 @@ Use the two tools in sequence via API calls:
 1. Call *protein_openmm_md* to generate MD outputs and get `work_dir`.
 2. Pass that `work_dir` into *openmm_extract_frames* to extract evenly spaced PDB frames.
 
-```python
-client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
-if not await client.connect():
-    print("connection failed")
-    return
-
-md_resp = await client.session.call_tool(
-    "protein_openmm_md",
-    arguments={
-        "protein_pdb": "/path/to/input.pdb",
-        "solvent_type": "implicit",
-        "gb_model": "OBC2",
-        "md_time": 1000.0,
-        "full_md": True
-    }
-)
-md_result = client.parse_result(md_resp)
-work_dir = md_result["work_dir"]
-
-frames_resp = await client.session.call_tool(
-    "openmm_extract_frames",
-    arguments={
-        "work_dir": work_dir,
-        "num_frames": 100,
-        "prefix": "frame"
-    }
-)
-frames_result = client.parse_result(frames_resp)
-key_output = frames_result["frame_files"]
-
-await client.disconnect() 
-```
+Invoke `mcp__DrugSDA-Tool__protein_openmm_md` and then `mcp__DrugSDA-Tool__openmm_extract_frames` with the arguments documented above; use the result fields `work_dir`, `frame_files`.

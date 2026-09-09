@@ -48,19 +48,7 @@ Return:
 
 How to use tool *equiscore_pocket* :
 
-```python
-response = await client.session.call_tool(
-    "equiscore_pocket",
-    arguments={
-        "docking_result": "relative/path/to/docking_result.sdf",
-        "receptor_pdb": "relative/path/to/receptor.pdb",
-        "pocket_cutoff": 10.0,
-        "dry_run": True
-    }
-)
-result = client.parse_result(response)
-key_output = result["single_sdf_dir"]
-```
+Invoke `mcp__DrugSDA-Tool__equiscore_pocket` with the arguments documented above; use the result fields `single_sdf_dir`.
 
 #### Example parameter sets
 
@@ -124,23 +112,7 @@ Return:
 
 How to use tool *equiscore_screen* :
 
-```python
-response = await client.session.call_tool(
-    "equiscore_screen",
-    arguments={
-        "pocket_dir": "relative/path/to/pockets",
-        "ngpu": 1,
-        "batch_size": 128,
-        "num_workers": 8,
-        "multi_pose": False,
-        "pose_num": 1,
-        "debug": False,
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-key_output = result["predictions_path"]
-```
+Invoke `mcp__DrugSDA-Tool__equiscore_screen` with the arguments documented above; use the result fields `predictions_path`.
 
 #### Example parameter sets
 
@@ -203,21 +175,7 @@ Return:
 
 How to use tool *equiscore_pipeline* :
 
-```python
-response = await client.session.call_tool(
-    "equiscore_pipeline",
-    arguments={
-        "docking_result": "relative/path/to/docking_result.sdf",
-        "receptor_pdb": "relative/path/to/receptor.pdb",
-        "ngpu": 1,
-        "multi_pose": False,
-        "pose_num": 1,
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-key_output = result["predictions_path"]
-```
+Invoke `mcp__DrugSDA-Tool__equiscore_pipeline` with the arguments documented above; use the result fields `predictions_path`.
 
 #### Example parameter sets
 

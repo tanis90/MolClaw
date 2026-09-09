@@ -41,19 +41,4 @@ Return:
 
 Tool usage:
 
-```python
-response = await client.session.call_tool(
-    "fix_pdb",
-    arguments={
-        "input_path": pdb_path,
-        "add_hydrogens": add_hydrogens,
-        "ph": ph,	
-        "remove_water": remove_water,
-        "replace_nonstandard": replace_nonstandard,
-        "remove_heterogens": remove_heterogens,
-        "add_missing_residues": add_missing_residues
-    }
-)
-result = client.parse_result(response)
-fixed_pdb_path = result["output_file"]
-```
+Invoke `mcp__DrugSDA-Tool__fix_pdb` with the arguments documented above; use the result fields `output_file`.

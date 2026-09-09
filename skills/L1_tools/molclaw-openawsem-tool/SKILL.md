@@ -47,25 +47,7 @@ Return:
 
 How to use tool *openawsem_sim* :
 
-```python
-response = await client.session.call_tool(
-    "openawsem_sim",
-    arguments={
-        "sim_dir": "/path/to/awsem_sim_dir",
-        "steps": 1000,
-        "mode": "annealing",
-        "temperature": 300.0,
-        "platform": "CUDA",
-        "use_frag_mem": False,
-        "compute_q": False,
-        "dry_run": False,
-        "gpu_id": "0"
-    }
-)
-result = client.parse_result(response)
-simulation_dir = result["simulation_dir"]
-
-```
+Invoke `mcp__DrugSDA-Tool__openawsem_sim` with the arguments documented above; use the result fields `simulation_dir`.
 
 #### Example parameter sets
 
@@ -120,20 +102,7 @@ Return:
 
 How to use tool *openawsem_traj_extract* :
 
-```python
-response = await client.session.call_tool(
-    "openawsem_traj_extract",
-    arguments={
-        "sim_dir": "/path/to/awsem_sim_dir",
-        "num_frames": 100,
-        "backend": "auto",
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-frame_files = result["frame_files"]
-
-```
+Invoke `mcp__DrugSDA-Tool__openawsem_traj_extract` with the arguments documented above; use the result fields `frame_files`.
 
 #### Example parameter sets
 
@@ -158,35 +127,4 @@ frame_files = result["frame_files"]
 ### 3. Simulation to Extraction Workflow
 Use `openawsem_sim` first, then feed its `simulation_dir` into `openawsem_traj_extract`.
 
-```python
-client = DrugSDAClient("https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool")
-if not await client.connect():
-    print("connection failed")
-    return
-
-sim_resp = await client.session.call_tool(
-    "openawsem_sim",
-    arguments={
-        "sim_dir": "/path/to/awsem_sim_dir",
-        "steps": 1000,
-        "mode": "annealing",
-        "platform": "CUDA",
-        "dry_run": False
-    }
-)
-sim_result = client.parse_result(sim_resp)
-
-extract_resp = await client.session.call_tool(
-    "openawsem_traj_extract",
-    arguments={
-        "sim_dir": sim_result["simulation_dir"],
-        "num_frames": 100,
-        "backend": "auto",
-        "dry_run": False
-    }
-)
-extract_result = client.parse_result(extract_resp)
-frame_files = extract_result["frame_files"]
-
-await client.disconnect()
-```
+Invoke `mcp__DrugSDA-Tool__openawsem_sim` and then `mcp__DrugSDA-Tool__openawsem_traj_extract` with the arguments documented above; use the result fields `simulation_dir`, `frame_files`.

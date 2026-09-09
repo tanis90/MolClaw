@@ -33,18 +33,4 @@ Return:
 
 How to use tool *reinvent_mol2mol_sampling*:
 
-```python
-response = await client.session.call_tool(
-    "reinvent_mol2mol_sampling",
-    arguments={
-        "smiles": smiles,
-        "n": n,
-        "min_similarity": min_similarity,
-        "prior_type": prior_type,
-        "lipinski": True,
-        "filter_preset": filter_type
-    }
-)
-result = client.parse_result(response)
-output_smiles_list = result["output_smiles_list"]
-```
+Invoke `mcp__DrugSDA-Tool__reinvent_mol2mol_sampling` with the arguments documented above; use the result fields `output_smiles_list`.

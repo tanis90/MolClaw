@@ -34,19 +34,7 @@ Return:
 
 How to use tool *calculate_morgan_fingerprint_similarity* :
 
-```python
-response = await client.session.call_tool(
-    "calculate_morgan_fingerprint_similarity",
-    arguments={
-        "target_smiles": target_smiles,
-        "candidate_smiles_list": candidate_smiles_list,
-        "radius": radius,
-        "nBits": nBits
-    }
-)
-result = client.parse_result(response)
-similarities = result["similarities"]
-```
+Invoke `mcp__DrugSDA-Tool__calculate_morgan_fingerprint_similarity` with the arguments documented above; use the result fields `similarities`.
 
 **Scene 2**: Compute the count of shared structural fragments between a target molecule and a list of candidate molecules using Morgan fingerprints. Need to use the tool *calculate_common_fragments*.
 
@@ -68,15 +56,4 @@ Return:
 
 How to use tool *calculate_common_fragments* :
 
-```python
-response = await client.session.call_tool(
-    "calculate_common_fragments",
-    arguments={
-        "target_smiles": target_smiles,
-        "candidate_smiles_list": candidate_smiles_list,
-        "radius": radius
-    }
-)
-result = client.parse_result(response)
-fragments_info = result["fragments_info"]
-```
+Invoke `mcp__DrugSDA-Tool__calculate_common_fragments` with the arguments documented above; use the result fields `fragments_info`.

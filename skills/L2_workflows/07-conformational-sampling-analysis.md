@@ -73,20 +73,7 @@ Execute the chosen sampling method with the parameters above. Target: at least 1
 | OpenAWSEM | Output PDB(s), trajectory files | **A — MUST download** |
 | OpenMM | Trajectory (XTC/DCD), final frame (PDB/GRO), topology (PSF/TOP) | **A — MUST download** |
 
-```python
-# Download ALL structure files from sampling output
-import os, base64
-for struct_file in sampling_output_files:
-    response = await client.session.call_tool(
-        "server_file_to_base64",
-        arguments={"file_path": struct_file}
-    )
-    dl = client.parse_result(response)
-    local_path = f"step{N}_conf_{i:03d}.pdb"
-    with open(local_path, "wb") as f:
-        f.write(base64.b64decode(dl["base64_string"]))
-    assert os.path.getsize(local_path) > 0
-```
+For every output file, invoke `mcp__DrugSDA-Tool__server_file_to_base64` to fetch its content, then write it locally with Bash `base64 -d` (stepNN-named files).
 
 **⚠ COUNT GATE (L3 Principle 11):** After downloading, count the actual number of conformations obtained:
 ```

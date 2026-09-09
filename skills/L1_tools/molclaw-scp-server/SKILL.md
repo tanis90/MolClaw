@@ -1,6 +1,6 @@
 ---
 name: molclaw-scp-server
-description: All tools utilized within MolClaw skills connect via the MCP protocol. This skill is the unified guide for connecting to the deployed MCP server before invoking tools.
+description: All tools utilized within MolClaw skills are provided by the host environment as native MCP tools (mcp__DrugSDA-Tool__*). This skill describes the toolset and the calling convention used across the skill docs.
 license: MIT license
 metadata:
     skill-author: PJLab
@@ -8,102 +8,20 @@ metadata:
 
 SCP (Science Context Protocol) is an open-source standard protocol designed to accelerate scientific discovery by building a global collaboration network for autonomous scientific agents, connecting heterogeneous scientific resources (software tools, AI models, datasets, workflow engines, lab instruments, etc.).
 
-### 1. Server Definition
+### 1. Tool availability
 
-If MCP environment. is not installed, please run `pip install mcp`.
+All MolClaw computation tools — docking, molecular sampling, ADMET, protein structure retrieval, MD, visualization, file transfer — are served by a single MCP deployment (**DrugSDA-Tool**, 81 tools). The host environment establishes the connection before the session starts, so every tool is already present in the tool list under the `mcp__DrugSDA-Tool__` namespace, for example:
 
-Configure the credential through the repository environment template. Never
-write an API key into a skill, source file, command example, or committed
-configuration file.
+- `mcp__DrugSDA-Tool__molecule_docking_quickvina_fullprocess`
+- `mcp__DrugSDA-Tool__retrieve_protein_structure_by_pdb_id`
+- `mcp__DrugSDA-Tool__pred_mol_admet`
 
-```bash
-cd /path/to/MolClaw
-cp .env.template .env
-# Set SCP_HUB_API_KEY in .env, then load it into the current shell:
-set -a
-source .env
-set +a
-```
+Invoke them like any other tool, with the arguments documented in each skill. Credentials (`SCP_HUB_API_KEY`) and endpoint management belong to the host environment, never to a task.
 
-The server is defined as below:
+### 2. Reading the reference blocks in other skills
 
-```python
-import json
-import os
-from mcp.client.streamable_http import streamablehttp_client
-from mcp import ClientSession
+Each skill documents its tool's input arguments and output fields in a reference block (mirroring the server's own tool description). Invoke the tool itself with those arguments; the reference block is documentation, not code to reproduce.
 
-DrugSDA_Tool_SERVER_URL = "https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool"
+### 3. Self-hosted deployments
 
-class DrugSDAClient:    
-    def __init__(self, server_url: str):
-        self.server_url = server_url
-        self.session = None
-        self.api_key = os.environ.get("SCP_HUB_API_KEY")
-        if not self.api_key:
-            raise RuntimeError(
-                "SCP_HUB_API_KEY is not set. Copy .env.template to .env, "
-                "set the key, and load .env into the current shell."
-            )
-        
-    async def connect(self):
-        print(f"server url: {self.server_url}")
-        try:
-            self.transport = streamablehttp_client(
-                url=self.server_url,
-                headers={"SCP-HUB-API-KEY": self.api_key}
-            )
-            self.read, self.write, self.get_session_id = await self.transport.__aenter__()
-            
-            self.session_ctx = ClientSession(self.read, self.write)
-            self.session = await self.session_ctx.__aenter__()
-
-            await self.session.initialize()
-            session_id = self.get_session_id()
-            
-            print(f"✓ connect success")
-            return True
-            
-        except Exception as e:
-            print(f"✗ connect failure: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
-    
-    async def disconnect(self):
-        try:
-            if self.session:
-                await self.session_ctx.__aexit__(None, None, None)
-            if hasattr(self, 'transport'):
-                await self.transport.__aexit__(None, None, None)
-            print("✓ already disconnect")
-        except Exception as e:
-            print(f"✗ disconnect error: {e}")
-    
-    def parse_result(self, result):
-        try:
-            if hasattr(result, 'content') and result.content:
-                content = result.content[0]
-                if hasattr(content, 'text'):
-                    return json.loads(content.text)
-            return str(result)
-        except Exception as e:
-            return {"error": f"parse error: {e}", "raw": str(result)}
-```
-
-### 2. Server Connection
-
-The **initialization** and **shutdown** of the MCP server are shown below:
-
-```python
-## When start, connect the MCP server
-client = DrugSDAClient(DrugSDA_Tool_SERVER_URL)
-if not await client.connect():
-    print("connection failed")
-    return
-
-## When finish, disconnect the MCP server
-await client.disconnect() 
-```
-
-**Note**: The deployed MolClaw tool endpoint is `https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool`.
+Outside a managed host, provision the MCP server yourself and register it in your agent runtime's MCP configuration: streamable HTTP endpoint `https://scp.intern-ai.org.cn/api/v1/mcp/2/DrugSDA-Tool`, auth header `SCP-HUB-API-KEY`, key from the repository `.env.template` (apply at <https://github.com/InternScience/scp>). See the repository README for details.

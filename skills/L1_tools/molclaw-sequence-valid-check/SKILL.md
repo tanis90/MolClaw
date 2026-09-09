@@ -29,14 +29,4 @@ Return:
 
 How to use tool *is_valid_protein_sequence* :
 
-```python
-
-response = await client.session.call_tool(
-    "is_valid_protein_sequence",
-    arguments={
-        "sequences": sequence_list
-    }
-)
-result = client.parse_result(response)
-valid_res = result["valid_res"]
-```
+Invoke `mcp__DrugSDA-Tool__is_valid_protein_sequence` with the arguments documented above; use the result fields `valid_res`.

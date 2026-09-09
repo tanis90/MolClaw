@@ -45,21 +45,7 @@ Return:
 
 How to use tool *chroma_monomer* :
 
-```python
-response = await client.session.call_tool(
-    "chroma_monomer",
-    arguments={
-        "length": 150,
-        "steps": 500,
-        "device": "cuda:0",
-        "fmt": "cif",
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-output_file = result["output_file"]
-
-```
+Invoke `mcp__DrugSDA-Tool__chroma_monomer` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 
@@ -108,21 +94,7 @@ Return:
 
 How to use tool *chroma_complex* :
 
-```python
-response = await client.session.call_tool(
-    "chroma_complex",
-    arguments={
-        "chains": "100,120",
-        "steps": 500,
-        "device": "cuda:0",
-        "fmt": "cif",
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-output_file = result["output_file"]
-
-```
+Invoke `mcp__DrugSDA-Tool__chroma_complex` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 
@@ -179,25 +151,7 @@ Return:
 
 How to use tool *chroma_symmetry* :
 
-```python
-response = await client.session.call_tool(
-    "chroma_symmetry",
-    arguments={
-        "group": "C_3",
-        "length": 80,
-        "steps": 500,
-        "num_chain_neighbors": 2,
-        "langevin_factor": 8.0,
-        "inverse_temperature": 8.0,
-        "device": "cuda:0",
-        "fmt": "cif",
-        "dry_run": False
-    }
-)
-result = client.parse_result(response)
-output_file = result["output_file"]
-
-```
+Invoke `mcp__DrugSDA-Tool__chroma_symmetry` with the arguments documented above; use the result fields `output_file`.
 
 #### Example parameter sets
 

@@ -36,13 +36,4 @@ Return:
 
 How to use tool *calculate_mol_basic_info*:
 
-```python
-response = await client.session.call_tool(
-    "calculate_mol_basic_info",			
-    arguments={
-        "smiles_list": smiles_list
-    }
-)
-result = client.parse_result(response)
-metrics = result["metrics"]
-```
+Invoke `mcp__DrugSDA-Tool__calculate_mol_basic_info` with the arguments documented above; use the result fields `metrics`.

@@ -29,14 +29,4 @@ Return:
 
 How to use tool *pred_mol_admet* :
 
-```python
-response = await client.session.call_tool(
-    "pred_mol_admet",
-    arguments={
-        "smiles_list": smiles_list,
-        "smiles_file": ''
-    }
-)
-result = client.parse_result(response)
-admet_predictions = result["json_content"]
-```
+Invoke `mcp__DrugSDA-Tool__pred_mol_admet` with the arguments documented above; use the result fields `json_content`.
